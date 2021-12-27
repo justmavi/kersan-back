@@ -3,7 +3,7 @@ import { extension } from 'mime-types';
 import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MulterOptionsFactory } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
@@ -14,11 +14,13 @@ export class MulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterOptions | Promise<MulterOptions> {
     return {
       fileFilter: (req, file, cb) => {
-        console.log(extension);
         const ext = extension(file.mimetype) as string;
 
         if (!MulterConfigService.allowedFileTypes.includes(ext)) {
-          return cb(new Error('Unsupported image type'), false);
+          return cb(
+            new HttpException('Unsupported image type', HttpStatus.BAD_REQUEST),
+            false,
+          );
         }
 
         cb(null, true);
