@@ -1,11 +1,9 @@
-import { config } from 'dotenv';
-
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
 
-config();
+import { GlobalExceptionFilter } from 'src/common/exceptions/GlobalExceptionFilter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,7 +14,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
+  app.useGlobalFilters(new GlobalExceptionFilter());
   await app.listen(process.env.HTTP_PORT);
 
   console.log('Now listening port', process.env.HTTP_PORT);

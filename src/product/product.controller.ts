@@ -1,20 +1,37 @@
 import {
-    Body, Controller, Delete, Get, Param, Patch, Post, UploadedFiles, UseInterceptors
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
+// There is no way to use environment variables in decorators
+let maxUploadsPerRequest: number;
+
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly configService: ConfigService,
+  ) {
+    maxUploadsPerRequest = this.configService.get<number>(
+      'global.maxUploadsPerRequest',
+    );
+  }
 
   @Post()
-  @UseInterceptors(
-    FilesInterceptor('images', parseInt(process.env.MAX_UPLOADS_PER_REQUEST)),
-  )
+  @UseInterceptors(FilesInterceptor('images', maxUploadsPerRequest))
   async create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
@@ -36,9 +53,7 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @UseInterceptors(
-    FilesInterceptor('images', parseInt(process.env.MAX_UPLOADS_PER_REQUEST)),
-  )
+  @UseInterceptors(FilesInterceptor('images', maxUploadsPerRequest))
   async update(
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,
