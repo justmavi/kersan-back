@@ -1,4 +1,10 @@
-import { IsEnum, IsNotIn, IsNumberString, IsOptional } from 'class-validator';
+import {
+  IsEnum,
+  IsNotIn,
+  IsNumberString,
+  IsOptional,
+  MinLength,
+} from 'class-validator';
 import { ValidationHelpers } from 'src/common/helpers/ValidationHelpers';
 
 export class IProductFilters {
@@ -18,11 +24,15 @@ export class IProductFilters {
   @IsEnum(['ASC', 'DESC'], {
     message: ValidationHelpers.compileDefaultErrorMessage('ASC or DESC'),
   })
-  orderDirection?: string;
+  orderDirection?: 'ASC' | 'DESC';
 
   @IsOptional()
   @IsNotIn(['tags'], {
     message: ValidationHelpers.compileDefaultErrorMessage('a supported value'),
   })
   orderBy?: string;
+
+  @IsOptional()
+  @MinLength(4)
+  searchText?: string;
 }

@@ -5,6 +5,7 @@ import {
   MoreThan,
   Repository,
   UpdateResult,
+  Any,
 } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
@@ -26,18 +27,31 @@ export class ProductService {
   }
 
   async findAll(filters?: IProductFilters): Promise<Product[]> {
-    const findFilters: FindManyOptions<Product> = {};
-    const lastId = filters.lastId ?? 0;
+    const limit = filters.limit ?? 20;
 
-    findFilters.take = filters.limit ?? 20;
-    findFilters.where = {
-      id:
-        filters.orderDirection === 'DESC' ? LessThan(lastId) : MoreThan(lastId),
-    };
-    if (filters.orderBy && filters.orderDirection)
-      findFilters.order = { [filters.orderBy]: filters.orderDirection };
+    const queryBuilder = this.productRepository.createQueryBuilder();
 
-    const products = await this.productRepository.find(findFilters);
+    if (filters.lastId) {
+      queryBuilder.where(
+        `id ${filters.orderDirection === 'DESC' ? '<' : '>'} :id`,
+        {
+          id: filters.lastId,
+        },
+      );
+    }
+    if (filters.searchText) {
+      queryBuilder.andWhere('name LIKE :name OR :tag = ANY(tags)', {
+        name: filters.searchText + '%',
+        tag: filters.searchText,
+      });
+    }
+
+    if (filters.orderBy && filters.orderDirection) {
+      queryBuilder.orderBy(filters.orderBy, filters.orderDirection);
+    }
+
+    const products = await queryBuilder.limit(limit).getMany();
+
     return products;
   }
 

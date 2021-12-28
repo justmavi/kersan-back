@@ -16,8 +16,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const errorInstance: { message?: string } = {};
-    const responseObj: { status?: number; instance?: HttpException } = {};
+    const errorInstance: { message?: string } = {
+      message: 'Something went wrong',
+    };
+    const responseObj: { status?: number; instance?: HttpException } = {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      instance: new InternalServerErrorException(errorInstance),
+    };
 
     if (exception instanceof HttpException) {
       responseObj.status = exception.getStatus();
@@ -34,11 +39,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             responseObj.instance = new ConflictException(errorInstance);
             break;
         }
-      } else {
-        responseObj.status = HttpStatus.INTERNAL_SERVER_ERROR;
-        errorInstance.message = 'Something went wrong';
-
-        responseObj.instance = new InternalServerErrorException(errorInstance);
       }
     }
 
