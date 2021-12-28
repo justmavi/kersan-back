@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { IProductFilters } from './types/IProductFilters';
 import { ProductService } from './product.service';
 
 // There is no way to use environment variables in decorators
@@ -43,8 +45,8 @@ export class ProductController {
   }
 
   @Get()
-  async findAll() {
-    return await this.productService.findAll();
+  async findAll(@Query() filters: IProductFilters) {
+    return await this.productService.findAll(filters);
   }
 
   @Get(':id')
