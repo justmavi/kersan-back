@@ -17,4 +17,19 @@ export class Product {
 
   @Column({ nullable: true })
   public description: string;
+
+  @Column('decimal', { nullable: true })
+  public newPrice: number;
+
+  @Column('decimal', { nullable: true })
+  public oldPrice: number;
+
+  @Column({ default: true })
+  public displayOldPrice: boolean;
+
+  @Column({ default: true })
+  public contains: boolean;
+
+  @Column('jsonb', { nullable: true })
+  public properties: Record<string, unknown>;
 }

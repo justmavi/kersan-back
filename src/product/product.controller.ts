@@ -15,8 +15,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { IProductFilters } from './types/IProductFilters';
 import { ProductService } from './product.service';
+import { IProductFilters } from './types/IProductFilters';
 
 // There is no way to use environment variables in decorators
 let maxUploadsPerRequest: number;
@@ -38,7 +38,7 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images.map((image) => image.path);
+    const photos = images?.map((image) => image.path);
     createProductDto.images = photos;
 
     return await this.productService.create(createProductDto);
@@ -61,7 +61,7 @@ export class ProductController {
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images.map((image) => image.path);
+    const photos = images?.map((image) => image.path);
     updateProductDto.images = photos;
 
     return await this.productService.update(id, updateProductDto);

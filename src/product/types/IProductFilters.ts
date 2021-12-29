@@ -10,25 +10,25 @@ import { ValidationHelpers } from 'src/common/helpers/ValidationHelpers';
 export class IProductFilters {
   @IsOptional()
   @IsNumberString({
-    message: ValidationHelpers.compileDefaultErrorMessage('a number'),
+    message: ValidationHelpers.compileValueErrorMessage('a number'),
   })
   lastId?: number;
 
   @IsOptional()
   @IsNumberString({
-    message: ValidationHelpers.compileDefaultErrorMessage('a number'),
+    message: ValidationHelpers.compileValueErrorMessage('a number'),
   })
   limit?: number;
 
   @IsOptional()
   @IsEnum(['ASC', 'DESC'], {
-    message: ValidationHelpers.compileDefaultErrorMessage('ASC or DESC'),
+    message: ValidationHelpers.compileValueErrorMessage('ASC or DESC'),
   })
   orderDirection?: 'ASC' | 'DESC';
 
   @IsOptional()
-  @IsNotIn(['tags'], {
-    message: ValidationHelpers.compileDefaultErrorMessage('a supported value'),
+  @IsNotIn(['tags, photos'], {
+    message: ValidationHelpers.compileValueErrorMessage('a supported value'),
   })
   orderBy?: string;
 

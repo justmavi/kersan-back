@@ -1,3 +1,6 @@
+import { DBError, UniqueViolationError, wrapError } from 'db-errors';
+import { Response } from 'express';
+
 import {
   ArgumentsHost,
   Catch,
@@ -7,8 +10,6 @@ import {
   HttpStatus,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { DBError, UniqueViolationError, wrapError } from 'db-errors';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -33,9 +34,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (err instanceof DBError) {
         switch (err.constructor) {
           case UniqueViolationError:
-            responseObj.status = HttpStatus.CONFLICT;
             errorInstance.message = 'Resource already exists';
 
+            responseObj.status = HttpStatus.CONFLICT;
             responseObj.instance = new ConflictException(errorInstance);
             break;
         }

@@ -1,12 +1,4 @@
-import {
-  DeleteResult,
-  FindManyOptions,
-  LessThan,
-  MoreThan,
-  Repository,
-  UpdateResult,
-  Any,
-} from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
