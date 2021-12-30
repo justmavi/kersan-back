@@ -3,10 +3,10 @@ import {
   IsArray,
   IsBoolean,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Length,
-  ValidateNested,
 } from 'class-validator';
 import { ValidationHelpers } from 'src/common/helpers/ValidationHelpers';
 
@@ -72,6 +72,9 @@ export class CreateProductDto {
     },
   )
   public subcategoryId: number;
+
+  @IsObject()
+  public properties: Record<string, unknown>;
 
   // extra field
   public images: string[];
