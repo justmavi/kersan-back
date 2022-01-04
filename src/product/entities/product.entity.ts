@@ -3,9 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { CreateProductDto } from '../dto/create-product.dto';
+import { Image } from './product_image.entity';
 
 @Entity()
 export class Product {
@@ -19,8 +23,8 @@ export class Product {
   @Column('varchar', { array: true, nullable: true })
   public tags: string[];
 
-  @Column('varchar', { array: true, nullable: true })
-  public photos: string[];
+  @OneToMany(() => Image, (image) => image.product)
+  public photos: Array<Image>;
 
   @Column({ nullable: true })
   public description: string;
@@ -46,4 +50,17 @@ export class Product {
 
   @UpdateDateColumn()
   public updatedAt: Date;
+
+  constructor(dto?: CreateProductDto) {
+    if (dto) {
+      this.name = dto.name;
+      this.description = dto.description;
+      this.tags = dto.tags;
+      this.newPrice = dto.newPrice;
+      this.oldPrice = dto.oldPrice;
+      this.displayOldPrice = dto.displayOldPrice;
+      this.contains = dto.contains;
+      this.properties = dto.properties;
+    }
+  }
 }

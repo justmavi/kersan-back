@@ -15,6 +15,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Image } from './entities/product_image.entity';
 import { ProductService } from './product.service';
 import { IProductFilters } from './types/IProductFilters';
 
@@ -38,10 +39,16 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images?.map((image) => image.path);
-    createProductDto.images = photos;
+    const photos = images?.map((item) => {
+      const image = new Image();
+      image.name = item.filename;
+      image.realName = item.originalname;
+      image.path = item.path;
 
-    return await this.productService.create(createProductDto);
+      return image;
+    });
+
+    return await this.productService.create(createProductDto, photos);
   }
 
   @Get()
@@ -62,7 +69,7 @@ export class ProductController {
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
     const photos = images?.map((image) => image.path);
-    updateProductDto.images = photos;
+    // updateProductDto.images = photos;
 
     return await this.productService.update(id, updateProductDto);
   }

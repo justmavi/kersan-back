@@ -6,22 +6,35 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { Image } from './entities/product_image.entity';
 import { IProductFilters } from './types/IProductFilters';
 
 @Injectable()
 export class ProductService {
   @InjectRepository(Product)
   private readonly productRepository: Repository<Product>;
+  @InjectRepository(Image)
+  private readonly imageRepository: Repository<Image>;
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const product = await this.productRepository.save(createProductDto);
+  async create(
+    createProductDto: CreateProductDto,
+    images?: Array<Image>,
+  ): Promise<Product> {
+    const productToBeCreated = new Product(createProductDto);
+
+    if (images) {
+      productToBeCreated.photos = await this.imageRepository.save(images);
+    }
+
+    const product = await this.productRepository.save(productToBeCreated);
+
     return product;
   }
 
   async findAll(filters?: IProductFilters): Promise<Product[]> {
     const limit = filters.limit ?? 20;
 
-    const queryBuilder = this.productRepository.createQueryBuilder();
+    const queryBuilder = this.productRepository.createQueryBuilder('product');
 
     if (filters.lastId) {
       queryBuilder.where(
@@ -42,7 +55,10 @@ export class ProductService {
       queryBuilder.orderBy(filters.orderBy, filters.orderDirection);
     }
 
-    const products = await queryBuilder.limit(limit).getMany();
+    const products = await queryBuilder
+      .leftJoinAndSelect('product.photos', 'image')
+      .limit(limit)
+      .getMany();
 
     return products;
   }

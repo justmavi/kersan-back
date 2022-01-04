@@ -1,3 +1,4 @@
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -31,6 +32,7 @@ export class CreateProductDto {
   })
   public tags: string[];
 
+  @Type(() => Number)
   @IsNumber(
     {},
     {
@@ -39,6 +41,7 @@ export class CreateProductDto {
   )
   public newPrice: number;
 
+  @Type(() => Number)
   @IsNumber(
     {},
     {
@@ -47,16 +50,19 @@ export class CreateProductDto {
   )
   public oldPrice: number;
 
+  @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
   @IsBoolean({
     message: ValidationHelpers.compileValueErrorMessage('true or false'),
   })
   public displayOldPrice: boolean;
 
+  @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
   @IsBoolean({
     message: ValidationHelpers.compileValueErrorMessage('true or false'),
   })
   public contains: boolean;
 
+  @Type(() => Number)
   @IsNumber(
     {},
     {
@@ -65,6 +71,7 @@ export class CreateProductDto {
   )
   public categoryId: number;
 
+  @Type(() => Number)
   @IsNumber(
     {},
     {
@@ -73,9 +80,9 @@ export class CreateProductDto {
   )
   public subcategoryId: number;
 
-  @IsObject()
+  @Transform(({ value }) => ValidationHelpers.parseToJson(value))
+  @IsObject({
+    message: ValidationHelpers.compileValueErrorMessage('an object'),
+  })
   public properties: Record<string, unknown>;
-
-  // extra field
-  public images: string[];
 }
