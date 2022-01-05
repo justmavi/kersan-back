@@ -39,14 +39,7 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images?.map((item) => {
-      const image = new Image();
-      image.name = item.filename;
-      image.realName = item.originalname;
-      image.path = item.path;
-
-      return image;
-    });
+    const photos = images?.map((item) => new Image(item));
 
     return await this.productService.create(createProductDto, photos);
   }
@@ -68,10 +61,9 @@ export class ProductController {
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images?.map((image) => image.path);
-    // updateProductDto.images = photos;
+    const photos = images?.map((item) => new Image(item));
 
-    return await this.productService.update(id, updateProductDto);
+    return await this.productService.update(id, updateProductDto, photos);
   }
 
   @Delete(':id')

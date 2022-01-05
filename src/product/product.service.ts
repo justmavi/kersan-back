@@ -1,4 +1,4 @@
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -64,18 +64,45 @@ export class ProductService {
   }
 
   async findOne(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne(id);
+    const product = await this.productRepository.findOne(id, {
+      relations: ['photos'],
+    });
     return product;
   }
 
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
-  ): Promise<UpdateResult> {
-    const updateResult = await this.productRepository.update(
-      id,
-      updateProductDto,
-    );
+    images?: Array<Image>,
+  ): Promise<Product> {
+    const productToBeUpdate = await this.productRepository.findOne(id, {
+      relations: ['photos'],
+    });
+
+    Object.assign(productToBeUpdate, updateProductDto, {
+      deletedImages: undefined,
+    });
+
+    if (images) {
+      const photos = await this.imageRepository.save(images);
+
+      if (!Array.isArray(productToBeUpdate.photos)) {
+        productToBeUpdate.photos = new Array<Image>();
+      }
+
+      productToBeUpdate.photos.push(...photos);
+    }
+
+    if (updateProductDto.deletedImages?.length) {
+      productToBeUpdate.photos = productToBeUpdate.photos.filter(
+        (item) => !updateProductDto.deletedImages.includes(item.id),
+      );
+
+      await this.imageRepository.delete(updateProductDto.deletedImages);
+    }
+
+    const updateResult = await this.productRepository.save(productToBeUpdate);
+
     return updateResult;
   }
 

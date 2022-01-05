@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { CreateProductDto } from '../dto/create-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
 import { Image } from './product_image.entity';
 
 @Entity()
@@ -51,7 +52,7 @@ export class Product {
   @UpdateDateColumn()
   public updatedAt: Date;
 
-  constructor(dto?: CreateProductDto) {
+  constructor(dto?: CreateProductDto | UpdateProductDto) {
     if (dto) {
       this.name = dto.name;
       this.description = dto.description;

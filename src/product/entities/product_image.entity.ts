@@ -22,9 +22,19 @@ export class Image {
   @Column()
   public realName: string;
 
-  @ManyToOne(() => Product, (product) => product.photos)
+  @ManyToOne(() => Product, (product) => product.photos, {
+    onDelete: 'CASCADE',
+  })
   public product: Product;
 
   @CreateDateColumn()
   public createdAt: Date;
+
+  constructor(image?: Express.Multer.File) {
+    if (image) {
+      this.name = image.filename;
+      this.realName = image.originalname;
+      this.path = image.path;
+    }
+  }
 }
