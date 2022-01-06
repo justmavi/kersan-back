@@ -8,6 +8,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { Image } from './entities/product_image.entity';
 import { IProductFilters } from './types/IProductFilters';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductService {
@@ -15,6 +16,12 @@ export class ProductService {
   private readonly productRepository: Repository<Product>;
   @InjectRepository(Image)
   private readonly imageRepository: Repository<Image>;
+
+  private defaultLimit: number;
+
+  constructor(configService: ConfigService) {
+    this.defaultLimit = configService.get<number>('global.dataDefaultLimit');
+  }
 
   async create(
     createProductDto: CreateProductDto,
@@ -32,7 +39,7 @@ export class ProductService {
   }
 
   async findAll(filters?: IProductFilters): Promise<Product[]> {
-    const limit = filters.limit ?? 20;
+    const limit = filters.limit ?? this.defaultLimit;
 
     const queryBuilder = this.productRepository.createQueryBuilder('product');
 
@@ -82,6 +89,7 @@ export class ProductService {
     return product;
   }
 
+  // This will be optimized, when typeorm starts support returning * in save method
   async update(
     id: number,
     updateProductDto: UpdateProductDto,

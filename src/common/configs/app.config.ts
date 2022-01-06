@@ -4,5 +4,6 @@ export default () => ({
     nodeEnv: process.env.NODE_ENV ?? 'development',
     uploadsFolder: process.env.UPLOADS_FOLDER ?? './images',
     maxUploadsPerRequest: process.env.MAX_UPLOADS_PER_REQUEST ?? 8,
+    dataDefaultLimit: process.env.DATA_DEFAULT_LIMIT ?? 15,
   },
 });
