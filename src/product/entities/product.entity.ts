@@ -13,6 +13,7 @@ import { UpdateProductDto } from '../dto/update-product.dto';
 import { Image } from './product_image.entity';
 
 @Entity()
+@Index(['name', 'description'])
 export class Product {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -28,6 +29,7 @@ export class Product {
   public photos: Array<Image>;
 
   @Column({ nullable: true })
+  @Index()
   public description: string;
 
   @Column('decimal', { nullable: true })

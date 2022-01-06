@@ -1,6 +1,6 @@
 import { DeleteResult, Repository } from 'typeorm';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateProductDto } from './dto/create-product.dto';
@@ -38,26 +38,33 @@ export class ProductService {
 
     if (filters.lastId) {
       queryBuilder.where(
-        `id ${filters.orderDirection === 'DESC' ? '<' : '>'} :id`,
+        `product.id ${filters.orderDirection === 'DESC' ? '<' : '>'} :id`,
         {
           id: filters.lastId,
         },
       );
     }
     if (filters.searchText) {
-      queryBuilder.andWhere('name LIKE :name OR :tag = ANY(tags)', {
-        name: filters.searchText + '%',
-        tag: filters.searchText,
-      });
+      queryBuilder.andWhere(
+        'product.name ILIKE :name OR description ILIKE :description OR :tag = ANY(tags)',
+        {
+          name: '%' + filters.searchText + '%',
+          description: '%' + filters.searchText + '%',
+          tag: filters.searchText,
+        },
+      );
     }
 
     if (filters.orderBy && filters.orderDirection) {
-      queryBuilder.orderBy(filters.orderBy, filters.orderDirection);
+      queryBuilder.orderBy(
+        'product.' + filters.orderBy,
+        filters.orderDirection,
+      );
     }
 
     const products = await queryBuilder
       .leftJoinAndSelect('product.photos', 'image')
-      .limit(limit)
+      .take(limit)
       .getMany();
 
     return products;
@@ -67,6 +74,11 @@ export class ProductService {
     const product = await this.productRepository.findOne(id, {
       relations: ['photos'],
     });
+
+    if (!product) {
+      throw new NotFoundException();
+    }
+
     return product;
   }
 
@@ -78,6 +90,10 @@ export class ProductService {
     const productToBeUpdate = await this.productRepository.findOne(id, {
       relations: ['photos'],
     });
+
+    if (!productToBeUpdate) {
+      throw new NotFoundException();
+    }
 
     Object.assign(productToBeUpdate, updateProductDto, {
       deletedImages: undefined,
