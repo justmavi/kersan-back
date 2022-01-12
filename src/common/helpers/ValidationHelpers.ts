@@ -10,11 +10,7 @@ export class ValidationHelpers {
     return ValidationHelpers.booleanVariantsMap;
   }
 
-  public static compileValueErrorMessage(type: string) {
-    return `Invalid value passed to $property. It must be ${type}`;
-  }
-
-  public static parseToJson(value) {
+  public static parseToJson(value: string | Record<string, unknown>) {
     try {
       if (typeof value === 'object') return value;
 

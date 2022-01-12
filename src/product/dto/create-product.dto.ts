@@ -20,69 +20,36 @@ export class CreateProductDto {
   public description: string;
 
   @IsOptional()
-  @IsArray({
-    message: ValidationHelpers.compileValueErrorMessage('an array'),
-  })
-  @ArrayNotEmpty({
-    message: ValidationHelpers.compileValueErrorMessage('a not empty'),
-  })
-  @IsString({
-    message: ValidationHelpers.compileValueErrorMessage('a string element'),
-    each: true,
-  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
   public tags: string[];
 
   @Type(() => Number)
-  @IsNumber(
-    {},
-    {
-      message: ValidationHelpers.compileValueErrorMessage('a number'),
-    },
-  )
+  @IsNumber()
   public newPrice: number;
 
   @Type(() => Number)
-  @IsNumber(
-    {},
-    {
-      message: ValidationHelpers.compileValueErrorMessage('a number'),
-    },
-  )
+  @IsNumber()
   public oldPrice: number;
 
   @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
-  @IsBoolean({
-    message: ValidationHelpers.compileValueErrorMessage('true or false'),
-  })
+  @IsBoolean()
   public displayOldPrice: boolean;
 
   @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
-  @IsBoolean({
-    message: ValidationHelpers.compileValueErrorMessage('true or false'),
-  })
+  @IsBoolean()
   public contains: boolean;
 
   @Type(() => Number)
-  @IsNumber(
-    {},
-    {
-      message: ValidationHelpers.compileValueErrorMessage('a number'),
-    },
-  )
+  @IsNumber()
   public categoryId: number;
 
   @Type(() => Number)
-  @IsNumber(
-    {},
-    {
-      message: ValidationHelpers.compileValueErrorMessage('a number'),
-    },
-  )
+  @IsNumber()
   public subcategoryId: number;
 
   @Transform(({ value }) => ValidationHelpers.parseToJson(value))
-  @IsObject({
-    message: ValidationHelpers.compileValueErrorMessage('an object'),
-  })
+  @IsObject()
   public properties: Record<string, unknown>;
 }

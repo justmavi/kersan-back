@@ -5,31 +5,22 @@ import {
   IsOptional,
   MinLength,
 } from 'class-validator';
-import { ValidationHelpers } from 'src/common/helpers/ValidationHelpers';
 
 export class IProductFilters {
   @IsOptional()
-  @IsNumberString({
-    message: ValidationHelpers.compileValueErrorMessage('a number'),
-  })
+  @IsNumberString()
   lastId?: number;
 
   @IsOptional()
-  @IsNumberString({
-    message: ValidationHelpers.compileValueErrorMessage('a number'),
-  })
+  @IsNumberString()
   limit?: number;
 
   @IsOptional()
-  @IsEnum(['ASC', 'DESC'], {
-    message: ValidationHelpers.compileValueErrorMessage('ASC or DESC'),
-  })
+  @IsEnum(['ASC', 'DESC'])
   orderDirection?: 'ASC' | 'DESC';
 
   @IsOptional()
-  @IsNotIn(['tags, photos'], {
-    message: ValidationHelpers.compileValueErrorMessage('a supported value'),
-  })
+  @IsNotIn(['tags, photos'])
   orderBy?: string;
 
   @IsOptional()
