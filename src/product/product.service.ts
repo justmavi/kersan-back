@@ -1,14 +1,11 @@
-import { DeleteResult, Repository } from 'typeorm';
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Image } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
-import { Image } from './entities/product_image.entity';
 import { IProductFilters } from './types/IProductFilters';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductService {
@@ -16,12 +13,6 @@ export class ProductService {
   private readonly productRepository: Repository<Product>;
   @InjectRepository(Image)
   private readonly imageRepository: Repository<Image>;
-
-  private defaultLimit: number;
-
-  constructor(configService: ConfigService) {
-    this.defaultLimit = configService.get<number>('global.dataDefaultLimit');
-  }
 
   async create(
     createProductDto: CreateProductDto,
@@ -39,8 +30,6 @@ export class ProductService {
   }
 
   async findAll(filters?: IProductFilters): Promise<Product[]> {
-    const limit = filters.limit ?? this.defaultLimit;
-
     const queryBuilder = this.productRepository.createQueryBuilder('product');
 
     if (filters.lastId) {
@@ -71,7 +60,7 @@ export class ProductService {
 
     const products = await queryBuilder
       .leftJoinAndSelect('product.photos', 'image')
-      .take(limit)
+      .take(filters.limit)
       .getMany();
 
     return products;
@@ -81,10 +70,6 @@ export class ProductService {
     const product = await this.productRepository.findOne(id, {
       relations: ['photos'],
     });
-
-    if (!product) {
-      throw new NotFoundException();
-    }
 
     return product;
   }

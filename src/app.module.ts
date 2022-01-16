@@ -1,11 +1,11 @@
-import { getConnectionOptions } from 'typeorm';
-
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { getConnectionOptions } from 'typeorm';
+import { AuthModule } from './auth/auth.module';
 import config from './common/configs/app.config';
 import { ProductModule } from './product/product.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +19,8 @@ import { ProductModule } from './product/product.module';
         }),
     }),
     ProductModule,
+    AuthModule,
+    UserModule,
   ],
 })
 export class AppModule {}

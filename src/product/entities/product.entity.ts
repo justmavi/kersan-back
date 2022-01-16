@@ -7,10 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { Image } from './product_image.entity';
+import { Image } from './product-image.entity';
 
 @Entity()
 @Index(['name', 'description'])
@@ -18,8 +17,7 @@ export class Product {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ nullable: false })
-  @Index({ unique: true })
+  @Column({ unique: true, nullable: false })
   public name: string;
 
   @Column('varchar', { array: true, nullable: true })

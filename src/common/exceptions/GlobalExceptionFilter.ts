@@ -1,6 +1,3 @@
-import { DBError, UniqueViolationError, wrapError } from 'db-errors';
-import { Response } from 'express';
-
 import {
   ArgumentsHost,
   Catch,
@@ -10,6 +7,8 @@ import {
   HttpStatus,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { DBError, UniqueViolationError, wrapError } from 'db-errors';
+import { Response } from 'express';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -42,6 +41,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         }
       }
     }
+
+    console.log(exception);
 
     response.status(responseObj.status).json(responseObj.instance);
   }

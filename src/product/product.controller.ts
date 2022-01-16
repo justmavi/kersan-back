@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -10,31 +11,19 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
-
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Image } from './entities/product_image.entity';
+import { Image } from './entities/product-image.entity';
 import { ProductService } from './product.service';
 import { IProductFilters } from './types/IProductFilters';
 
-// There is no way to use environment variables in decorators
-let maxUploadsPerRequest: number;
-
 @Controller('product')
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService,
-    private readonly configService: ConfigService,
-  ) {
-    maxUploadsPerRequest = this.configService.get<number>(
-      'global.maxUploadsPerRequest',
-    );
-  }
+  constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('images', maxUploadsPerRequest))
+  @UseInterceptors(FilesInterceptor('images', 8))
   async create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
@@ -51,11 +40,17 @@ export class ProductController {
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return await this.productService.findOne(id);
+    const product = await this.productService.findOne(id);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
   }
 
   @Patch(':id')
-  @UseInterceptors(FilesInterceptor('images', maxUploadsPerRequest))
+  @UseInterceptors(FilesInterceptor('images', 8))
   async update(
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,

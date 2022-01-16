@@ -1,19 +1,13 @@
-import {
-  IsEnum,
-  IsNotIn,
-  IsNumberString,
-  IsOptional,
-  MinLength,
-} from 'class-validator';
+import { IsEnum, IsInt, IsNotIn, IsOptional, MinLength } from 'class-validator';
 
 export class IProductFilters {
   @IsOptional()
-  @IsNumberString()
+  @IsInt()
   lastId?: number;
 
   @IsOptional()
-  @IsNumberString()
-  limit?: number;
+  @IsInt()
+  limit?: number = 20;
 
   @IsOptional()
   @IsEnum(['ASC', 'DESC'])

@@ -7,7 +7,7 @@ export class ValidationHelpers {
   ]);
 
   public static get booleanVariants() {
-    return ValidationHelpers.booleanVariantsMap;
+    return this.booleanVariantsMap;
   }
 
   public static parseToJson(value: string | Record<string, unknown>) {
