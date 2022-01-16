@@ -5,7 +5,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Image } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
-import { IProductFilters } from './types/IProductFilters';
+import { IProductFilters } from './types/product-filter.type';
 
 @Injectable()
 export class ProductService {

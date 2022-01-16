@@ -1,4 +1,4 @@
-import { GlobalExceptionFilter } from 'src/common/exceptions/GlobalExceptionFilter';
+import { GlobalExceptionFilter } from 'src/common/exceptions/global.exception-filter';
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';

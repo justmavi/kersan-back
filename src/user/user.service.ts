@@ -6,7 +6,7 @@ import { FindCondition, ILike, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { IUserFilter } from './types/IUserFilter';
+import { IUserFilter } from './types/user-filter.type';
 
 @Injectable()
 export class UserService {

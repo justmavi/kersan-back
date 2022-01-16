@@ -9,7 +9,7 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { ValidationHelpers } from 'src/common/helpers/ValidationHelpers';
+import { ValidationHelpers } from 'src/common/helpers/validation.helper';
 
 export class CreateProductDto {
   @Length(3, 20)
