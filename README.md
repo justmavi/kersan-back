@@ -1,6 +1,6 @@
 ## Installation
 
-1. `Clone` repository
+1. Clone repository
 
 ```bash
 $ git clone git@github.com:justmavi/kersan-back.git
