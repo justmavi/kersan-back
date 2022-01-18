@@ -9,12 +9,15 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { Authorize } from 'src/common/decorators/authorize.decorator';
+import { Roles } from 'src/common/enums/roles.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserFilter } from './types/user-filter.type';
 import { UserService } from './user.service';
 
 @Controller('user')
+@Authorize(Roles.ROLE_ADMIN)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
