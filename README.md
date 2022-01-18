@@ -1,7 +1,21 @@
 ## Installation
 
+1. `Clone` repository
+
+```bash
+$ git clone git@github.com:justmavi/kersan-back.git
+$ cd kersan-back
+```
+
+2. Install packages with `yarn`
+
 ```bash
 $ yarn install
+```
+
+3. Create `.env` file and describe variables
+
+```bash
 $ touch .env
 ```
 
