@@ -1,9 +1,11 @@
+import * as bcrypt from 'bcrypt';
 import { Roles } from 'src/common/enums/roles.enum';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,18 +15,16 @@ export class User {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Index()
   @Column()
   public firstName: string;
 
-  @Index()
   @Column()
   public lastName: string;
 
   @Column({ unique: true })
   public email: string;
 
-  @Column()
+  @Column({ select: false })
   public password: string;
 
   @Column('int')
@@ -35,4 +35,12 @@ export class User {
 
   @UpdateDateColumn()
   public updatedAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
 }

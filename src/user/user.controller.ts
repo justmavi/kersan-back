@@ -13,7 +13,7 @@ import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IUserFilter } from './types/user-filter.type';
+import { UserFilter } from './types/user-filter.type';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -30,11 +30,8 @@ export class UserController {
   }
 
   @Get()
-  async findAll(@Query() filter: IUserFilter) {
+  async findAll(@Query() filter: UserFilter) {
     const users = await this.userService.findAll(filter);
-    users.forEach((user) => {
-      user.password = undefined;
-    });
 
     return users;
   }
@@ -47,14 +44,15 @@ export class UserController {
       throw new NotFoundException('User not found');
     }
 
-    delete user.password;
-
     return user;
   }
 
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+    const user = await this.userService.update(id, updateUserDto);
+    delete user.password;
+
+    return user;
   }
 
   @Delete(':id')

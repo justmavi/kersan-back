@@ -1,33 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { FindCondition, ILike, Repository } from 'typeorm';
+import { OrderDirection } from 'src/common/enums/order-direction.enum';
+import { FindCondition, ILike, LessThan, MoreThan, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { IUserFilter } from './types/user-filter.type';
+import { UserFilter } from './types/user-filter.type';
 
 @Injectable()
 export class UserService {
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
 
-  constructor(private readonly configService: ConfigService) {}
-
   async create(createUserDto: CreateUserDto) {
-    const { password } = createUserDto;
-    const hashedPassword = await bcrypt.hash(
-      password,
-      this.configService.get<number>('hash.rounds'),
+    return await this.userRepository.save(
+      this.userRepository.create(createUserDto),
     );
-
-    createUserDto.password = hashedPassword;
-    return await this.userRepository.save(createUserDto);
   }
 
-  async findAll(filter: IUserFilter) {
-    const { firstName, lastName, email } = filter;
+  async findAll(filter: UserFilter) {
+    const {
+      firstName,
+      lastName,
+      email,
+      role,
+      limit,
+      lastId,
+      orderBy,
+      orderDirection,
+    } = filter;
     const where: FindCondition<User> = {};
 
     if (firstName) {
@@ -42,7 +43,20 @@ export class UserService {
       where.email = ILike(email + '%');
     }
 
-    const users = await this.userRepository.find({ where });
+    if (role) {
+      where.role = role;
+    }
+
+    where.id =
+      orderBy && orderDirection === OrderDirection.DESC
+        ? LessThan(lastId)
+        : MoreThan(lastId);
+
+    const users = await this.userRepository.find({
+      where,
+      order: { [orderBy]: orderDirection },
+      take: limit,
+    });
 
     return users;
   }
@@ -52,25 +66,25 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return this.userRepository.findOne({ email });
+    return this.userRepository.findOne(
+      { email },
+      { select: ['password', 'id', 'email'] },
+    );
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { password } = updateUserDto;
+    const user = await this.userRepository.findOne(id);
 
-    if (password) {
-      const hashedPassword = await bcrypt.hash(
-        password,
-        this.configService.get<number>('hash.rounds'),
-      );
-
-      updateUserDto.password = hashedPassword;
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
-    return this.userRepository.update(id, updateUserDto);
+    Object.assign(user, updateUserDto);
+
+    return await this.userRepository.save(user);
   }
 
   async remove(id: number) {
-    return this.userRepository.delete(id);
+    return await this.userRepository.delete(id);
   }
 }

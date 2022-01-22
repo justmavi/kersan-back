@@ -1,6 +1,8 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import { Roles } from 'src/common/enums/roles.enum';
+import { Pagination } from 'src/common/types/pagination.type';
 
-export class IUserFilter {
+export class UserFilter extends Pagination {
   @IsOptional()
   @IsString()
   public firstName?: string;
@@ -14,6 +16,6 @@ export class IUserFilter {
   public email?: string;
 
   @IsOptional()
-  @IsEnum([])
-  public role?: string;
+  @IsNumberString()
+  public role?: Roles;
 }
