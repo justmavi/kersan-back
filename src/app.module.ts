@@ -3,8 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
+import { CategoryModule } from './category/category.module';
 import config from './common/configs/app.config';
 import { ProductModule } from './product/product.module';
+import { SubcategoryModule } from './subcategory/subcategory.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -21,6 +23,8 @@ import { UserModule } from './user/user.module';
     ProductModule,
     AuthModule,
     UserModule,
+    CategoryModule,
+    SubcategoryModule,
   ],
 })
 export class AppModule {}

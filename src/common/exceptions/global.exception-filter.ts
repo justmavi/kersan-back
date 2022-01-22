@@ -6,8 +6,14 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
-import { DBError, UniqueViolationError, wrapError } from 'db-errors';
+import {
+  DBError,
+  ForeignKeyViolationError,
+  UniqueViolationError,
+  wrapError,
+} from 'db-errors';
 import { Response } from 'express';
 
 @Catch()
@@ -37,6 +43,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
             responseObj.status = HttpStatus.CONFLICT;
             responseObj.instance = new ConflictException(errorInstance);
+            break;
+          case ForeignKeyViolationError:
+            errorInstance.message = 'Depended resource does not exists';
+
+            responseObj.status = HttpStatus.NOT_FOUND;
+            responseObj.instance = new NotFoundException(errorInstance);
             break;
         }
       }
