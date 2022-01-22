@@ -32,6 +32,20 @@ BCRYPT_PASS_HASH_ROUNDS=10
 
 ## Running the app
 
+1. Delete old sources
+
+```bash
+$ yarn prebuild
+```
+
+2. Build the app
+
+```bash
+$ yarn build
+```
+
+3. Run application
+
 ```bash
 # development
 $ yarn start
