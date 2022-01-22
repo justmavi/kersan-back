@@ -1,22 +1,7 @@
-import { IsEnum, IsInt, IsNotIn, IsOptional, MinLength } from 'class-validator';
+import { IsOptional, MinLength } from 'class-validator';
+import { Pagination } from 'src/common/types/pagination.type';
 
-export class IProductFilters {
-  @IsOptional()
-  @IsInt()
-  lastId?: number;
-
-  @IsOptional()
-  @IsInt()
-  limit?: number = 20;
-
-  @IsOptional()
-  @IsEnum(['ASC', 'DESC'])
-  orderDirection?: 'ASC' | 'DESC';
-
-  @IsOptional()
-  @IsNotIn(['tags, photos'])
-  orderBy?: string;
-
+export class ProductFilters extends Pagination {
   @IsOptional()
   @MinLength(4)
   searchText?: string;

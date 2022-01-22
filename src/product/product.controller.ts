@@ -17,7 +17,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Image } from './entities/product-image.entity';
 import { ProductService } from './product.service';
-import { IProductFilters } from './types/product-filter.type';
+import { ProductFilters } from './types/product-filter.type';
 
 @Controller('product')
 export class ProductController {
@@ -36,7 +36,7 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(@Query() filters: IProductFilters) {
+  async findAll(@Query() filters: ProductFilters) {
     return await this.productService.findAll(filters);
   }
 

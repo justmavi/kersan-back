@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { OrderDirection } from 'src/common/enums/order-direction.enum';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Image } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
-import { IProductFilters } from './types/product-filter.type';
+import { ProductFilters } from './types/product-filter.type';
 
 @Injectable()
 export class ProductService {
@@ -24,43 +25,44 @@ export class ProductService {
       productToBeCreated.photos = await this.imageRepository.save(images);
     }
 
-    const product = await this.productRepository.save(productToBeCreated);
+    const product = await this.productRepository.save(
+      this.productRepository.create(productToBeCreated),
+    );
 
     return product;
   }
 
-  async findAll(filters?: IProductFilters): Promise<Product[]> {
+  async findAll(filters?: ProductFilters): Promise<Product[]> {
+    const { lastId, searchText, orderBy, orderDirection, limit } = filters;
     const queryBuilder = this.productRepository.createQueryBuilder('product');
 
-    if (filters.lastId) {
-      queryBuilder.where(
-        `product.id ${filters.orderDirection === 'DESC' ? '<' : '>'} :id`,
-        {
-          id: filters.lastId,
-        },
-      );
-    }
-    if (filters.searchText) {
+    queryBuilder.where(
+      `product.id ${
+        filters.orderBy && filters.orderDirection === OrderDirection.DESC
+          ? '<'
+          : '>'
+      } :id`,
+      {
+        id: lastId,
+      },
+    );
+
+    if (searchText) {
       queryBuilder.andWhere(
         'product.name ILIKE :name OR description ILIKE :description OR :tag = ANY(tags)',
         {
-          name: '%' + filters.searchText + '%',
-          description: '%' + filters.searchText + '%',
-          tag: filters.searchText,
+          name: '%' + searchText + '%',
+          description: '%' + searchText + '%',
+          tag: searchText,
         },
       );
     }
 
-    if (filters.orderBy && filters.orderDirection) {
-      queryBuilder.orderBy(
-        'product.' + filters.orderBy,
-        filters.orderDirection,
-      );
-    }
+    queryBuilder.orderBy('product.' + orderBy, orderDirection);
 
     const products = await queryBuilder
       .leftJoinAndSelect('product.photos', 'image')
-      .take(filters.limit)
+      .take(limit)
       .getMany();
 
     return products;
@@ -68,7 +70,7 @@ export class ProductService {
 
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne(id, {
-      relations: ['photos'],
+      relations: ['photos', 'category', 'subcategory'],
     });
 
     return product;
@@ -85,7 +87,7 @@ export class ProductService {
     });
 
     if (!productToBeUpdate) {
-      throw new NotFoundException();
+      throw new NotFoundException('Product not found');
     }
 
     Object.assign(productToBeUpdate, updateProductDto, {

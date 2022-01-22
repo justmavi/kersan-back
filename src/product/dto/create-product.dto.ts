@@ -1,9 +1,9 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
-  IsInt,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -15,6 +15,9 @@ export class CreateProductDto {
   @Length(3, 20)
   public name: string;
 
+  @Length(3, 20)
+  public slug: string;
+
   @Length(0, 2000)
   @IsOptional()
   public description: string;
@@ -25,24 +28,24 @@ export class CreateProductDto {
   @IsString({ each: true })
   public tags: string[];
 
-  @IsInt()
+  @Type(() => Number)
+  @IsNumber()
   public newPrice: number;
 
-  @IsInt()
+  @Type(() => Number)
+  @IsNumber()
   public oldPrice: number;
-
-  @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
-  @IsBoolean()
-  public displayOldPrice: boolean;
 
   @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
   @IsBoolean()
   public contains: boolean;
 
-  @IsInt()
+  @Type(() => Number)
+  @IsNumber()
   public categoryId: number;
 
-  @IsInt()
+  @Type(() => Number)
+  @IsNumber()
   public subcategoryId: number;
 
   @Transform(({ value }) => ValidationHelpers.parseToJson(value))
