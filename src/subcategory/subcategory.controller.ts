@@ -3,45 +3,55 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
+import { Authorize } from 'src/common/decorators/authorize.decorator';
+import { Roles } from 'src/common/enums/roles.enum';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { SubcategoryService } from './subcategory.service';
 import { SubcategoryFilter } from './types/subcategory-filter.type';
 
 @Controller('subcategory')
+@Authorize(Roles.ROLE_ADMIN)
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
 
   @Post()
-  create(@Body() createSubcategoryDto: CreateSubcategoryDto) {
-    return this.subcategoryService.create(createSubcategoryDto);
+  async create(@Body() createSubcategoryDto: CreateSubcategoryDto) {
+    return await this.subcategoryService.create(createSubcategoryDto);
   }
 
   @Get()
-  findAll(@Query() filters: SubcategoryFilter) {
-    return this.subcategoryService.findAll(filters);
+  async findAll(@Query() filters: SubcategoryFilter) {
+    return await this.subcategoryService.findAll(filters);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.subcategoryService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const subcategory = await this.subcategoryService.findOne(id);
+
+    if (!subcategory) {
+      throw new NotFoundException('Subcategory not found');
+    }
+
+    return subcategory;
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  async update(
+    @Param('id') id: number,
     @Body() updateSubcategoryDto: UpdateSubcategoryDto,
   ) {
-    return this.subcategoryService.update(+id, updateSubcategoryDto);
+    return await this.subcategoryService.update(id, updateSubcategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subcategoryService.remove(+id);
+  async remove(@Param('id') id: number) {
+    return await this.subcategoryService.remove(id);
   }
 }
