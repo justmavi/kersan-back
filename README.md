@@ -57,6 +57,14 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
+For debug mode just press `F5` **after prebuild**. App will start automatically by `launch.json` configurations.
+
+## IDE
+
+Recommended to use [Visual Studio Code](https://code.visualstudio.com).<br>
+**Necessarily** setup [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).<br>
+Check guide: [Config ESLint and Prettier in Visual Studio Code](https://medium.com/how-to-react/config-eslint-and-prettier-in-visual-studio-code-for-react-js-development-97bb2236b31a).
+
 ## Stay in touch
 
 - Author - [Grish Poghosyan](https://www.linkedin.com/in/grishpoghosyan)
