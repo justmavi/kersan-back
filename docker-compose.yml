@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  db:
+    container_name: kersan-postgres
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=$POSTGRES_DATABASE
+      - POSTGRES_USER=$POSTGRES_USERNAME
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    ports:
+      - '$POSTGRES_PORT:5432'
+    volumes:
+      - postgres-data-container:/var/lib/postgresql/data
+volumes:
+  postgres-data-container:
