@@ -13,30 +13,10 @@ $ cd kersan-back
 $ yarn install
 ```
 
-3. Create `.env` file and describe variables
+1. Clone `.env.example` file into `.env`
 
 ```bash
-$ touch .env
-```
-
-## Environment variables
-
-```
-NODE_ENV=production
-HTTP_PORT=3000
-
-UPLOADS_FOLDER=./images
-ALLOWED_EXTENSIONS_TO_UPLOAD=jpg,jpeg,png
-
-JWT_SECRET=$2a$15$pgeoqtvOHk7t5DBSg0Nfm.xuUX5snozrWuEcjvq7zoFxskjmV7IyK
-JWT_EXPIRATION_TIME=24h
-
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USERNAME=kersanuser
-POSTGRES_PASSWORD=ABshXc4ahs3
-POSTGRES_DATABASE=kersan
-
+$ cp .env.example .env
 ```
 
 ## Running the app
