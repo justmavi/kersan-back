@@ -1,7 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  utilities as nestWinstonModuleUtilities,
+  WinstonModule,
+} from 'nest-winston';
+import { GlobalExceptionFilter } from 'src/common/exceptions/global.exception-filter';
 import { getConnectionOptions } from 'typeorm';
+import * as winston from 'winston';
+import 'winston-daily-rotate-file';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import config from './common/configs/app.config';
@@ -28,12 +36,49 @@ import { UserModule } from './user/user.module';
         });
       },
     }),
+    WinstonModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transports: [
+          new winston.transports.Console({
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              nestWinstonModuleUtilities.format.nestLike('Kersan', {
+                prettyPrint: true,
+              }),
+            ),
+          }),
+          new winston.transports.DailyRotateFile({
+            level: 'error',
+            filename: configService.get<string>('log.fileName'),
+            dirname: configService.get<string>('log.directoryPath'),
+            zippedArchive: true,
+            datePattern: 'YYYY-MM-DD-HH-mm',
+            maxSize: '50m',
+            maxFiles: '14d',
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              winston.format.printf(({ level, message, timestamp }) => {
+                return `[${level.toUpperCase()}] — ${timestamp}\t${message}`;
+              }),
+            ),
+          }),
+        ],
+      }),
+    }),
     ProductModule,
     AuthModule,
     UserModule,
     CategoryModule,
     SubcategoryModule,
     ImageModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 export class AppModule {}

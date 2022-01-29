@@ -5,7 +5,9 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Inject,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -15,9 +17,14 @@ import {
   wrapError,
 } from 'db-errors';
 import { Response } from 'express';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
+
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -50,11 +57,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             responseObj.status = HttpStatus.NOT_FOUND;
             responseObj.instance = new NotFoundException(errorInstance);
             break;
+          default:
+            this.logger.error('', err.nativeError);
+
+            break;
         }
+      } else {
+        this.logger.error('', exception);
       }
     }
-
-    console.log(exception);
 
     response.status(responseObj.status).json(responseObj.instance);
   }

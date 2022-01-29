@@ -15,4 +15,8 @@ export default () => ({
     jwtSecret: process.env.JWT_SECRET ?? 'secretKey',
     jwtExpirationTime: process.env.JWT_EXPIRATION_TIME ?? '24h',
   },
+  log: {
+    directoryPath: process.env.LOG_DIRECTORY_PATH ?? './logs',
+    fileName: process.env.LOG_FILE_NAME ?? 'kersan-err-%DATE%.log',
+  },
 });
