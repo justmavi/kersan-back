@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterOptionsFactory } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { existsSync, mkdirSync } from 'fs';
 import * as mimetype from 'mime-types';
 import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
@@ -28,10 +27,6 @@ export class MulterConfigService implements MulterOptionsFactory {
       storage: diskStorage({
         destination: (res, file, cb) => {
           const path = this.configService.get<string>('upload.path');
-
-          if (!existsSync(path)) {
-            mkdirSync(path);
-          }
 
           cb(null, path);
         },
