@@ -54,7 +54,7 @@ import { UserModule } from './user/user.module';
             filename: configService.get<string>('log.fileName'),
             dirname: configService.get<string>('log.directoryPath'),
             zippedArchive: true,
-            datePattern: 'YYYY-MM-DD-HH-mm',
+            datePattern: 'YYYY-MM-DD-HH',
             maxSize: '50m',
             maxFiles: '14d',
             format: winston.format.combine(
