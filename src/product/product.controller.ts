@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -16,7 +15,6 @@ import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { PathParams } from 'src/common/types/path-params.type';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Image } from './entities/product-image.entity';
 import { ProductService } from './product.service';
 import { ProductFilters } from './types/product-filter.type';
 
@@ -27,13 +25,8 @@ export class ProductController {
   @Post()
   @Authorize()
   @UseInterceptors(FilesInterceptor('images', 8))
-  async create(
-    @Body() createProductDto: CreateProductDto,
-    @UploadedFiles() images: Array<Express.Multer.File>,
-  ) {
-    const photos = images?.map((item) => new Image(item));
-
-    return await this.productService.create(createProductDto, photos);
+  async create(@Body() createProductDto: CreateProductDto) {
+    return await this.productService.create(createProductDto);
   }
 
   @Get()
@@ -54,15 +47,11 @@ export class ProductController {
 
   @Patch(':id')
   @Authorize()
-  @UseInterceptors(FilesInterceptor('images', 8))
   async update(
     @Param() { id }: PathParams,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    const photos = images?.map((item) => new Image(item));
-
-    return await this.productService.update(id, updateProductDto, photos);
+    return await this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')

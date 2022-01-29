@@ -35,7 +35,7 @@ export class Category {
   @BeforeUpdate()
   public slugify() {
     if (this.slug) {
-      this.slug = slugify(this.slug, { lower: true });
+      this.slug = slugify(this.name, { lower: true });
     }
   }
 }

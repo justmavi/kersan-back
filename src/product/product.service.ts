@@ -4,7 +4,6 @@ import { OrderDirection } from 'src/common/enums/order-direction.enum';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Image } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { ProductFilters } from './types/product-filter.type';
 
@@ -12,18 +11,9 @@ import { ProductFilters } from './types/product-filter.type';
 export class ProductService {
   @InjectRepository(Product)
   private readonly productRepository: Repository<Product>;
-  @InjectRepository(Image)
-  private readonly imageRepository: Repository<Image>;
 
-  async create(
-    createProductDto: CreateProductDto,
-    images?: Array<Image>,
-  ): Promise<Product> {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     const productToBeCreated = new Product(createProductDto);
-
-    if (images) {
-      productToBeCreated.photos = await this.imageRepository.save(images);
-    }
 
     const product = await this.productRepository.save(
       this.productRepository.create(productToBeCreated),
@@ -36,16 +26,18 @@ export class ProductService {
     const { lastId, searchText, orderBy, orderDirection, limit } = filters;
     const queryBuilder = this.productRepository.createQueryBuilder('product');
 
-    queryBuilder.where(
-      `product.id ${
-        filters.orderBy && filters.orderDirection === OrderDirection.DESC
-          ? '<'
-          : '>'
-      } :id`,
-      {
-        id: lastId,
-      },
-    );
+    if (lastId) {
+      queryBuilder.where(
+        `product.id ${
+          filters.orderBy && filters.orderDirection === OrderDirection.DESC
+            ? '<'
+            : '>'
+        } :id`,
+        {
+          id: lastId,
+        },
+      );
+    }
 
     if (searchText) {
       queryBuilder.andWhere(
@@ -76,11 +68,9 @@ export class ProductService {
     return product;
   }
 
-  // This will be optimized, when typeorm starts support returning * in save method
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
-    images?: Array<Image>,
   ): Promise<Product> {
     const productToBeUpdate = await this.productRepository.findOne(id, {
       relations: ['photos'],
@@ -90,31 +80,9 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    Object.assign(productToBeUpdate, updateProductDto, {
-      deletedImages: undefined,
-    });
+    Object.assign(productToBeUpdate, updateProductDto);
 
-    if (images) {
-      const photos = await this.imageRepository.save(images);
-
-      if (!Array.isArray(productToBeUpdate.photos)) {
-        productToBeUpdate.photos = new Array<Image>();
-      }
-
-      productToBeUpdate.photos.push(...photos);
-    }
-
-    if (updateProductDto.deletedImages?.length) {
-      productToBeUpdate.photos = productToBeUpdate.photos.filter(
-        (item) => !updateProductDto.deletedImages.includes(item.id),
-      );
-
-      await this.imageRepository.delete(updateProductDto.deletedImages);
-    }
-
-    const updateResult = await this.productRepository.save(productToBeUpdate);
-
-    return updateResult;
+    return await this.productRepository.save(productToBeUpdate);
   }
 
   async remove(id: number): Promise<DeleteResult> {

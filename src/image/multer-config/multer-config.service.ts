@@ -1,22 +1,25 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MulterOptionsFactory } from '@nestjs/platform-express';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { existsSync, mkdirSync } from 'fs';
-import { extension } from 'mime-types';
+import * as mimetype from 'mime-types';
 import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { MulterOptionsFactory } from '@nestjs/platform-express';
-import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-
 @Injectable()
 export class MulterConfigService implements MulterOptionsFactory {
-  static allowedFileTypes: Array<string> = ['jpg', 'jpeg', 'png'];
+  constructor(private readonly configService: ConfigService) {}
 
   createMulterOptions(): MulterOptions | Promise<MulterOptions> {
     return {
       fileFilter: (req, file, cb) => {
-        const ext = extension(file.mimetype) as string;
+        const ext = mimetype.extension(file.mimetype) as string;
+        const allowedExtensions = this.configService.get<Array<string>>(
+          'upload.allowedExtensions',
+        );
 
-        if (!MulterConfigService.allowedFileTypes.includes(ext)) {
+        if (!allowedExtensions.includes(ext)) {
           return cb(
             new HttpException('Unsupported image type', HttpStatus.BAD_REQUEST),
             false,
@@ -27,7 +30,7 @@ export class MulterConfigService implements MulterOptionsFactory {
       },
       storage: diskStorage({
         destination: (res, file, cb) => {
-          const path = process.env.UPLOADS_FOLDER;
+          const path = this.configService.get<string>('upload.path');
 
           if (!existsSync(path)) {
             mkdirSync(path);
@@ -38,7 +41,7 @@ export class MulterConfigService implements MulterOptionsFactory {
 
         filename: (req, file, cb) => {
           const uuid = v4();
-          const ext = extension(file.mimetype);
+          const ext = mimetype.extension(file.mimetype);
 
           cb(null, `${uuid}.${ext}`);
         },

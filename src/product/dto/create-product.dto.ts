@@ -9,15 +9,18 @@ import {
   IsOptional,
   IsString,
   Length,
+  MinLength,
   ValidateIf,
 } from 'class-validator';
 import { ValidationHelpers } from 'src/common/helpers/validation.helper';
 
 export class CreateProductDto {
-  @Length(3, 20)
+  @IsString()
+  @Length(3, 40)
   public name: string;
 
-  @Length(3, 20)
+  @IsString()
+  @MinLength(3)
   public slug: string;
 
   @Length(0, 2000)

@@ -1,5 +1,6 @@
 import slugify from 'slugify';
 import { Category } from 'src/category/entities/category.entity';
+import { Image } from 'src/image/entities/image.entity';
 import { Subcategory } from 'src/subcategory/entities/subcategory.entity';
 import {
   BeforeInsert,
@@ -15,7 +16,6 @@ import {
 } from 'typeorm';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { Image } from './product-image.entity';
 
 @Entity()
 export class Product {
