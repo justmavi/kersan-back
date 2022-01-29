@@ -8,6 +8,7 @@ import config from './common/configs/app.config';
 import { ProductModule } from './product/product.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
 import { UserModule } from './user/user.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     CategoryModule,
     SubcategoryModule,
+    ImageModule,
   ],
 })
 export class AppModule {}

@@ -1,8 +1,6 @@
-import { GlobalExceptionFilter } from 'src/common/exceptions/global.exception-filter';
-
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
+import { GlobalExceptionFilter } from 'src/common/exceptions/global.exception-filter';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -12,6 +10,9 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   app.useGlobalFilters(new GlobalExceptionFilter());

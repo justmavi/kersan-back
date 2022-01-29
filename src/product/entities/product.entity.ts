@@ -50,7 +50,7 @@ export class Product {
   @Index()
   public description: string;
 
-  @Column('decimal', { nullable: true })
+  @Column('decimal')
   public newPrice: number;
 
   @Column('decimal', { nullable: true })

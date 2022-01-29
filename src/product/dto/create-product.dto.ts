@@ -1,13 +1,15 @@
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
+  IsInt,
   IsNumber,
   IsObject,
   IsOptional,
   IsString,
   Length,
+  ValidateIf,
 } from 'class-validator';
 import { ValidationHelpers } from 'src/common/helpers/validation.helper';
 
@@ -28,27 +30,25 @@ export class CreateProductDto {
   @IsString({ each: true })
   public tags: string[];
 
-  @Type(() => Number)
   @IsNumber()
   public newPrice: number;
 
-  @Type(() => Number)
+  @IsOptional()
   @IsNumber()
-  public oldPrice: number;
+  @ValidateIf((obj, val) => val !== null)
+  public oldPrice: number | null;
 
+  @IsOptional()
   @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
   @IsBoolean()
-  public contains: boolean;
+  public contains = true;
 
-  @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   public categoryId: number;
 
-  @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   public subcategoryId: number;
 
-  @Transform(({ value }) => ValidationHelpers.parseToJson(value))
   @IsObject()
   public properties: Record<string, unknown>;
 }

@@ -11,17 +11,18 @@ import {
 } from '@nestjs/common';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
+import { PathParams } from 'src/common/types/path-params.type';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { SubcategoryService } from './subcategory.service';
 import { SubcategoryFilter } from './types/subcategory-filter.type';
 
 @Controller('subcategory')
-@Authorize(Roles.ROLE_ADMIN)
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
 
   @Post()
+  @Authorize(Roles.ROLE_ADMIN)
   async create(@Body() createSubcategoryDto: CreateSubcategoryDto) {
     return await this.subcategoryService.create(createSubcategoryDto);
   }
@@ -32,7 +33,7 @@ export class SubcategoryController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param() { id }: PathParams) {
     const subcategory = await this.subcategoryService.findOne(id);
 
     if (!subcategory) {
@@ -43,15 +44,17 @@ export class SubcategoryController {
   }
 
   @Patch(':id')
+  @Authorize(Roles.ROLE_ADMIN)
   async update(
-    @Param('id') id: number,
+    @Param() { id }: PathParams,
     @Body() updateSubcategoryDto: UpdateSubcategoryDto,
   ) {
     return await this.subcategoryService.update(id, updateSubcategoryDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @Authorize(Roles.ROLE_ADMIN)
+  async remove(@Param() { id }: PathParams) {
     return await this.subcategoryService.remove(id);
   }
 }

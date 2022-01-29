@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
@@ -10,12 +9,10 @@ import { OrderDirection } from '../enums/order-direction.enum';
 
 export class Pagination {
   @IsOptional()
-  @Type(() => Number)
   @IsInt()
   lastId?: number = 0;
 
   @IsOptional()
-  @Type(() => Number)
   @IsInt()
   limit?: number = 20;
 

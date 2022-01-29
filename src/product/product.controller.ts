@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
+import { PathParams } from 'src/common/types/path-params.type';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Image } from './entities/product-image.entity';
@@ -41,7 +42,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param() { id }: PathParams) {
     const product = await this.productService.findOne(id);
 
     if (!product) {
@@ -55,7 +56,7 @@ export class ProductController {
   @Authorize()
   @UseInterceptors(FilesInterceptor('images', 8))
   async update(
-    @Param('id') id: number,
+    @Param() { id }: PathParams,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
@@ -66,7 +67,7 @@ export class ProductController {
 
   @Delete(':id')
   @Authorize()
-  async remove(@Param('id') id: number) {
+  async remove(@Param() { id }: PathParams) {
     return await this.productService.remove(id);
   }
 }

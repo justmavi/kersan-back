@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
+import { PathParams } from 'src/common/types/path-params.type';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserFilter } from './types/user-filter.type';
@@ -37,7 +38,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param() { id }: PathParams) {
     const user = await this.userService.findOne(id);
 
     if (!user) {
@@ -48,7 +49,10 @@ export class UserController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param() { id }: PathParams,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const user = await this.userService.update(id, updateUserDto);
     delete user.password;
 
@@ -56,7 +60,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param() { id }: PathParams) {
     return await this.userService.remove(id);
   }
 }

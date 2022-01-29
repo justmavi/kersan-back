@@ -9,14 +9,4 @@ export class ValidationHelpers {
   public static get booleanVariants() {
     return this.booleanVariantsMap;
   }
-
-  public static parseToJson(value: string | Record<string, unknown>) {
-    try {
-      if (typeof value === 'object') return value;
-
-      return JSON.parse(value);
-    } catch {
-      return null;
-    }
-  }
 }

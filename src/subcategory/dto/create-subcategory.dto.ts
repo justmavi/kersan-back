@@ -1,12 +1,14 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSubcategoryDto {
   @IsString()
+  @IsNotEmpty()
   public name: string;
 
   @IsString()
+  @IsNotEmpty()
   public slug: string;
 
-  @IsNumber()
+  @IsInt()
   public categoryId: number;
 }
