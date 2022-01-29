@@ -5,10 +5,10 @@ import { getConnectionOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import config from './common/configs/app.config';
+import { ImageModule } from './image/image.module';
 import { ProductModule } from './product/product.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
 import { UserModule } from './user/user.module';
-import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -16,10 +16,17 @@ import { ImageModule } from './image/image.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) =>
-        Object.assign(await getConnectionOptions(), {
-          synchronize: config.get<string>('global.nodeEnv') === 'development',
-        }),
+      useFactory: async (config: ConfigService) => {
+        const isDevelopment =
+          config.get<string>('global.nodeEnv') === 'development';
+
+        return Object.assign(await getConnectionOptions(), {
+          synchronize: isDevelopment,
+          logging: isDevelopment ? 'all' : ['error', 'warn'],
+          logger: isDevelopment ? 'advanced-console' : 'file',
+          maxQueryExecutionTime: 1000,
+        });
+      },
     }),
     ProductModule,
     AuthModule,
