@@ -22,12 +22,21 @@ $ touch .env
 ## Environment variables
 
 ```
-NODE_ENV=development
+NODE_ENV=production
 HTTP_PORT=3000
+
 UPLOADS_FOLDER=./images
+ALLOWED_EXTENSIONS_TO_UPLOAD=jpg,jpeg,png
+
 JWT_SECRET=$2a$15$pgeoqtvOHk7t5DBSg0Nfm.xuUX5snozrWuEcjvq7zoFxskjmV7IyK
 JWT_EXPIRATION_TIME=24h
-BCRYPT_PASS_HASH_ROUNDS=10
+
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USERNAME=kersanuser
+POSTGRES_PASSWORD=ABshXc4ahs3
+POSTGRES_DATABASE=kersan
+
 ```
 
 ## Running the app
@@ -44,7 +53,13 @@ $ yarn prebuild
 $ yarn build
 ```
 
-3. Run application
+3. Run docker containers
+
+```bash
+$ docker-compose up --build -d
+```
+
+4. Run application
 
 ```bash
 # development
@@ -57,7 +72,7 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
-For debug mode just press `F5` **after prebuild**. App will start automatically by `launch.json` configurations.
+For debug mode just press `F5`. App will start automatically by `launch.json` configurations.
 
 ## IDE
 
