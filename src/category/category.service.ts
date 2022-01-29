@@ -19,7 +19,15 @@ export class CategoryService {
   }
 
   async findAll(filter: CategoryFilter) {
-    const { name, limit, lastId, orderBy, orderDirection } = filter;
+    const { slug, name, limit, lastId, orderBy, orderDirection } = filter;
+
+    if (slug) {
+      return await this.categoryRepository.findOne({
+        where: { slug },
+        relations: ['subcategories'],
+      });
+    }
+
     const where: FindCondition<Category> = {};
 
     if (name) {

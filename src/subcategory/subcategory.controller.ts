@@ -29,7 +29,13 @@ export class SubcategoryController {
 
   @Get()
   async findAll(@Query() filters: SubcategoryFilter) {
-    return await this.subcategoryService.findAll(filters);
+    const subcategories = await this.subcategoryService.findAll(filters);
+
+    if (!subcategories) {
+      throw new NotFoundException('Subcategory not found');
+    }
+
+    return subcategories;
   }
 
   @Get(':id')

@@ -10,18 +10,18 @@ import { OrderDirection } from '../enums/order-direction.enum';
 export class Pagination {
   @IsOptional()
   @IsInt()
-  lastId?: number = 0;
+  public lastId?: number = 0;
 
   @IsOptional()
   @IsInt()
-  limit?: number = 20;
+  public limit?: number = 20;
 
   @IsOptional()
   @IsEnum(OrderDirection)
-  orderDirection?: 'ASC' | 'DESC' = OrderDirection.ASC;
+  public orderDirection?: 'ASC' | 'DESC' = OrderDirection.ASC;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  orderBy?: string = 'id';
+  public orderBy?: string = 'id';
 }

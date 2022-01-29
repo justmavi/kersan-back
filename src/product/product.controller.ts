@@ -31,7 +31,13 @@ export class ProductController {
 
   @Get()
   async findAll(@Query() filters: ProductFilters) {
-    return await this.productService.findAll(filters);
+    const products = await this.productService.findAll(filters);
+
+    if (!products) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return products;
   }
 
   @Get(':id')

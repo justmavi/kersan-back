@@ -22,8 +22,24 @@ export class ProductService {
     return product;
   }
 
-  async findAll(filters?: ProductFilters): Promise<Product[]> {
-    const { lastId, searchText, orderBy, orderDirection, limit } = filters;
+  async findAll(filters?: ProductFilters): Promise<Product | Product[]> {
+    const {
+      slug,
+      lastId,
+      searchText,
+      orderBy,
+      orderDirection,
+      limit,
+      categoryId,
+      subcategoryId,
+    } = filters;
+    if (slug) {
+      return await this.productRepository.findOne({
+        where: { slug },
+        relations: ['photos', 'category', 'subcategory'],
+      });
+    }
+
     const queryBuilder = this.productRepository.createQueryBuilder('product');
 
     if (lastId) {
@@ -48,6 +64,16 @@ export class ProductService {
           tag: searchText,
         },
       );
+    }
+
+    if (categoryId) {
+      queryBuilder.andWhere('categoryId = :categoryId', { categoryId });
+    }
+
+    if (subcategoryId) {
+      queryBuilder.andWhere('subcategoryId = :subcategoryId', {
+        subcategoryId,
+      });
     }
 
     queryBuilder.orderBy('product.' + orderBy, orderDirection);

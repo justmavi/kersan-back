@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -28,12 +29,24 @@ export class CategoryController {
   @Authorize(Roles.ROLE_ADMIN)
   @Get()
   async findAll(@Query() filter: CategoryFilter) {
-    return await this.categoryService.findAll(filter);
+    const categories = await this.categoryService.findAll(filter);
+
+    if (!categories) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return categories;
   }
 
   @Get(':id')
   async findOne(@Param() { id }: PathParams) {
-    return await this.categoryService.findOne(id);
+    const category = await this.categoryService.findOne(id);
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return category;
   }
 
   @Patch(':id')
