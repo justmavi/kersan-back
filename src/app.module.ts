@@ -41,29 +41,35 @@ import { UserModule } from './user/user.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transports: [
-          new winston.transports.Console({
-            format: winston.format.combine(
-              winston.format.timestamp(),
-              nestWinstonModuleUtilities.format.nestLike('Kersan', {
-                prettyPrint: true,
+          configService.get<string>('global.nodeEnv') === 'development'
+            ? new winston.transports.Console({
+                format: winston.format.combine(
+                  winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:SS' }),
+                  nestWinstonModuleUtilities.format.nestLike('Kersan', {
+                    prettyPrint: true,
+                  }),
+                ),
+              })
+            : new winston.transports.DailyRotateFile({
+                filename: configService.get<string>('log.fileName'),
+                dirname: configService.get<string>('log.directoryPath'),
+                zippedArchive: true,
+                datePattern: 'YYYY-MM-DD-HH',
+                maxSize: '50m',
+                maxFiles: '14d',
+                format: winston.format.combine(
+                  winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:SS' }),
+                  winston.format.printf(
+                    ({ level, message, timestamp, stack }) => {
+                      return `[${level.toUpperCase()}] — ${timestamp}\t${message}\t${JSON.stringify(
+                        stack,
+                        null,
+                        2,
+                      )}`;
+                    },
+                  ),
+                ),
               }),
-            ),
-          }),
-          new winston.transports.DailyRotateFile({
-            level: 'error',
-            filename: configService.get<string>('log.fileName'),
-            dirname: configService.get<string>('log.directoryPath'),
-            zippedArchive: true,
-            datePattern: 'YYYY-MM-DD-HH',
-            maxSize: '50m',
-            maxFiles: '14d',
-            format: winston.format.combine(
-              winston.format.timestamp(),
-              winston.format.printf(({ level, message, timestamp }) => {
-                return `[${level.toUpperCase()}] — ${timestamp}\t${message}`;
-              }),
-            ),
-          }),
         ],
       }),
     }),

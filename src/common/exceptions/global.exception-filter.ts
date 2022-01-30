@@ -58,12 +58,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             responseObj.instance = new NotFoundException(errorInstance);
             break;
           default:
-            this.logger.error('', err.nativeError);
+            this.logger.error(
+              'An error occured while querying to Database',
+              err.nativeError,
+            );
 
             break;
         }
       } else {
-        this.logger.error('', exception);
+        this.logger.error(
+          'An error occured while processing request',
+          exception,
+        );
       }
     }
 
