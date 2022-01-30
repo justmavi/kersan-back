@@ -39,7 +39,13 @@ $ yarn build
 $ docker-compose up --build -d
 ```
 
-4. Run application
+4. Run migrations
+
+```bash
+$ yarn migrate:run
+```
+
+5. Run application
 
 ```bash
 # development
