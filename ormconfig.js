@@ -6,4 +6,9 @@ module.exports = {
   password: process.env.POSTGRES_PASSWORD ?? 'ABshXc4ahs3',
   database: process.env.POSTGRES_DATABASE ?? 'kersan',
   entities: ['dist/**/*.entity{.ts,.js}'],
+  migrationsTableName: 'typeorm_migrations',
+  migrations: ['dist/**/*.migration{.ts,.js}'],
+  cli: {
+    migrationsDir: 'migrations',
+  },
 };
