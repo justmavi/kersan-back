@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDirection } from 'src/common/enums/order-direction.enum';
+import { IOk } from 'src/common/types/ok.type';
 import { FindCondition, ILike, LessThan, MoreThan, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -59,16 +60,17 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this.categoryRepository.findOne(id);
+  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<IOk> {
+    const category = await this.categoryRepository.update(
+      id,
+      this.categoryRepository.create(updateCategoryDto),
+    );
 
-    if (!category) {
+    if (!category.affected) {
       throw new NotFoundException('Category not found');
     }
 
-    Object.assign(category, updateCategoryDto);
-
-    return await this.categoryRepository.save(category);
+    return { ok: true };
   }
 
   async remove(id: number) {
