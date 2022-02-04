@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
+import { IOk } from 'src/common/types/ok.type';
 import { PathParams } from 'src/common/types/path-params.type';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -52,15 +53,24 @@ export class UserController {
   async update(
     @Param() { id }: PathParams,
     @Body() updateUserDto: UpdateUserDto,
-  ) {
-    const user = await this.userService.update(id, updateUserDto);
-    delete user.password;
+  ): Promise<IOk> {
+    const result = await this.userService.update(id, updateUserDto);
 
-    return user;
+    if (!result) {
+      throw new NotFoundException('User not found');
+    }
+
+    return { ok: result };
   }
 
   @Delete(':id')
-  async remove(@Param() { id }: PathParams) {
-    return await this.userService.remove(id);
+  async remove(@Param() { id }: PathParams): Promise<IOk> {
+    const result = await this.userService.remove(id);
+
+    if (!result) {
+      throw new NotFoundException('User not found');
+    }
+
+    return { ok: result };
   }
 }

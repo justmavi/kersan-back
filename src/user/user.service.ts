@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDirection } from 'src/common/enums/order-direction.enum';
 import { FindCondition, ILike, LessThan, MoreThan, Repository } from 'typeorm';
@@ -72,19 +72,18 @@ export class UserService {
     );
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne(id);
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<boolean> {
+    const result = await this.userRepository.update(
+      id,
+      this.userRepository.create(updateUserDto), // need for BeforeUpdate() working
+    );
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    Object.assign(user, updateUserDto);
-
-    return await this.userRepository.save(user);
+    return !!result.affected;
   }
 
-  async remove(id: number) {
-    return await this.userRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    const result = await this.userRepository.delete(id);
+
+    return !!result.affected;
   }
 }

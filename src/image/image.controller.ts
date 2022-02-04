@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  NotFoundException,
   Param,
   Post,
   UploadedFiles,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
+import { IOk } from 'src/common/types/ok.type';
 import { PathParams } from 'src/common/types/path-params.type';
 import { Image } from 'src/image/entities/image.entity';
 import { CreateImageDto } from './dto/create-image.dto';
@@ -32,12 +34,24 @@ export class ImageController {
   }
 
   @Delete(':id')
-  async removeOne(@Param() { id }: PathParams) {
-    return await this.imageService.remove(id);
+  async removeOne(@Param() { id }: PathParams): Promise<IOk> {
+    const result = await this.imageService.remove(id);
+
+    if (!result) {
+      throw new NotFoundException('Image not found');
+    }
+
+    return { ok: result };
   }
 
   @Delete()
-  async removeMany(@Body() { images }: DeleteImagesFilters) {
-    return await this.imageService.remove(images);
+  async removeMany(@Body() { images }: DeleteImagesFilters): Promise<IOk> {
+    const result = await this.imageService.remove(images);
+
+    if (!result) {
+      throw new NotFoundException('Image not found');
+    }
+
+    return { ok: result };
   }
 }

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
+import { IOk } from 'src/common/types/ok.type';
 import { PathParams } from 'src/common/types/path-params.type';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
@@ -54,13 +55,28 @@ export class SubcategoryController {
   async update(
     @Param() { id }: PathParams,
     @Body() updateSubcategoryDto: UpdateSubcategoryDto,
-  ) {
-    return await this.subcategoryService.update(id, updateSubcategoryDto);
+  ): Promise<IOk> {
+    const result = await this.subcategoryService.update(
+      id,
+      updateSubcategoryDto,
+    );
+
+    if (!result) {
+      throw new NotFoundException('Subcategory not found');
+    }
+
+    return { ok: result };
   }
 
   @Delete(':id')
   @Authorize(Roles.ROLE_ADMIN)
-  async remove(@Param() { id }: PathParams) {
-    return await this.subcategoryService.remove(id);
+  async remove(@Param() { id }: PathParams): Promise<IOk> {
+    const result = await this.subcategoryService.remove(id);
+
+    if (!result) {
+      throw new NotFoundException('Subcategory not found');
+    }
+
+    return { ok: result };
   }
 }

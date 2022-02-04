@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
+import { IOk } from 'src/common/types/ok.type';
 import { PathParams } from 'src/common/types/path-params.type';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -56,13 +57,25 @@ export class ProductController {
   async update(
     @Param() { id }: PathParams,
     @Body() updateProductDto: UpdateProductDto,
-  ) {
-    return await this.productService.update(id, updateProductDto);
+  ): Promise<IOk> {
+    const result = await this.productService.update(id, updateProductDto);
+
+    if (!result) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return { ok: result };
   }
 
   @Delete(':id')
   @Authorize()
-  async remove(@Param() { id }: PathParams) {
-    return await this.productService.remove(id);
+  async remove(@Param() { id }: PathParams): Promise<IOk> {
+    const result = await this.productService.remove(id);
+
+    if (!result) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return { ok: result };
   }
 }

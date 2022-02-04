@@ -12,7 +12,9 @@ export class ImageService {
     return await this.imageRepository.save(images);
   }
 
-  async remove(criteria: number | Array<number>) {
-    return await this.imageRepository.delete(criteria);
+  async remove(criteria: number | Array<number>): Promise<boolean> {
+    const result = await this.imageRepository.delete(criteria);
+
+    return !!result.affected;
   }
 }

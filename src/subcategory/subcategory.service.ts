@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDirection } from 'src/common/enums/order-direction.enum';
 import { SubcategoryFilter } from 'src/subcategory/types/subcategory-filter.type';
@@ -59,19 +59,21 @@ export class SubcategoryService {
     });
   }
 
-  async update(id: number, updateSubcategoryDto: UpdateSubcategoryDto) {
-    const subcategory = await this.subcategoryRepository.findOne(id);
+  async update(
+    id: number,
+    updateSubcategoryDto: UpdateSubcategoryDto,
+  ): Promise<boolean> {
+    const result = await this.subcategoryRepository.update(
+      id,
+      updateSubcategoryDto,
+    );
 
-    if (!subcategory) {
-      throw new NotFoundException('Subcategory not found');
-    }
-
-    Object.assign(subcategory, updateSubcategoryDto);
-
-    return await this.subcategoryRepository.save(subcategory);
+    return !!result.affected;
   }
 
-  async remove(id: number) {
-    return await this.subcategoryRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    const result = await this.subcategoryRepository.delete(id);
+
+    return !!result.affected;
   }
 }
