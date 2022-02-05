@@ -1,3 +1,4 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -13,6 +14,7 @@ import 'winston-daily-rotate-file';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import config from './common/configs/app.config';
+import { SMTPConnectionOptions } from './common/types/smtp.type';
 import { ImageModule } from './image/image.module';
 import { ProductModule } from './product/product.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
@@ -72,6 +74,25 @@ import { UserModule } from './user/user.module';
               }),
         ],
       }),
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const isDevelopment =
+          config.get<string>('global.nodeEnv') === 'development';
+        const transport = config.get<SMTPConnectionOptions>(
+          isDevelopment ? 'mailtrap' : 'smtp',
+        );
+        const mail = config.get<string>('mail.officialMail');
+
+        return {
+          transport,
+          defaults: {
+            from: mail,
+          },
+        };
+      },
     }),
     ProductModule,
     AuthModule,

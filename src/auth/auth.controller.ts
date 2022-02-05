@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   Body,
   Controller,
@@ -11,6 +12,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DateTime } from 'luxon';
 import { IOk } from 'src/common/types/ok.type';
 import { UserService } from 'src/user/user.service';
@@ -25,6 +27,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly mailerService: MailerService,
+    private readonly configSerive: ConfigService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -51,7 +55,13 @@ export class AuthController {
       const hash = this.authService.generatePasswordResetHash(user);
       await this.authService.savePasswordResetHash(user, hash);
 
-      // TODO: send mail
+      const host = this.configSerive.get<string>('global.host');
+
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: 'Password reset',
+        text: `Hello, ${user.firstName}. Your password reset link is ${host}/auth/password/${hash}`,
+      });
     }
 
     return { ok: true };
