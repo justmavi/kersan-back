@@ -13,7 +13,7 @@ $ cd kersan-back
 $ yarn install
 ```
 
-1. Clone `.env.example` file into `.env`
+3. Clone `.env.example` file into `.env`
 
 ```bash
 $ cp .env.example .env
