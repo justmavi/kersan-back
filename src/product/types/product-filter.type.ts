@@ -45,9 +45,6 @@ export class ProductFilter extends Pagination {
   public priceEnd: number = 2 ** 52;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    console.log(value);
-    return +value >= 1;
-  })
+  @Transform(({ value }) => +value >= 1)
   public contains = true;
 }
