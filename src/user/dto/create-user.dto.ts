@@ -3,10 +3,17 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
-  Matches,
+  MaxLength,
   MinLength,
+  Validate,
 } from 'class-validator';
+import { PasswordValidation } from 'class-validator-password-check/lib';
 import { Roles } from 'src/common/enums/roles.enum';
+import {
+  PasswordMaxLength,
+  PasswordMinLength,
+  PasswordRequirements,
+} from 'src/common/options/password-validator.options';
 
 export class CreateUserDto {
   @IsString()
@@ -25,14 +32,9 @@ export class CreateUserDto {
   public email: string;
 
   @IsString()
-  @MinLength(8)
-  @Matches(
-    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-\_\(\)]).{8,}$/g,
-    {
-      message:
-        'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 numeric value and 1 special character',
-    },
-  )
+  @MinLength(PasswordMinLength)
+  @MaxLength(PasswordMaxLength)
+  @Validate(PasswordValidation, [PasswordRequirements])
   public password: string;
 
   @IsInt()

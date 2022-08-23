@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnsupportedMediaTypeException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterOptionsFactory } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
@@ -19,7 +19,7 @@ export class MulterConfigService implements MulterOptionsFactory {
         );
 
         if (!allowedExtensions.includes(ext)) {
-          return cb(new BadRequestException('Unsupported image type'), false);
+          return cb(new UnsupportedMediaTypeException(), false);
         }
 
         cb(null, true);
