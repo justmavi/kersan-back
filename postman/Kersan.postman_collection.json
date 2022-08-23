@@ -1,0 +1,1126 @@
+{
+	"info": {
+		"_postman_id": "83cadbb2-93f1-4f9a-a932-796b3a8b3eb7",
+		"name": "Kersan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"if (!response) {\r",
+									"    throw new Error('No response');\r",
+									"} \r",
+									"\r",
+									"const { access_token } = response;\r",
+									"\r",
+									"if (!access_token) {\r",
+									"    throw new Error('No access token');  \r",
+									"} \r",
+									"\r",
+									"pm.environment.set('TOKEN', access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"pingvin@mail.ru\",\r\n    \"password\": \"Bye321@@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/auth/login",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current user account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/auth/whoami",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth",
+								"whoami"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"pingvin@mail.ru\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/auth/resetpassword",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth",
+								"resetpassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check password reset hash",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/auth/password/:hash",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth",
+								"password",
+								":hash"
+							],
+							"variable": [
+								{
+									"key": "hash",
+									"value": "9b8401ed4a75279bc8cdcaa3d959794b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newPassword\": \"Bye321@@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/auth/password/:hash",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth",
+								"password",
+								":hash"
+							],
+							"variable": [
+								{
+									"key": "hash",
+									"value": "9b8401ed4a75279bc8cdcaa3d959794b"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Tes\",\r\n    \"lastName\": \"ter\",\r\n    \"email\": \"pingvin@mail.ru\",\r\n    \"slug\": \"tester-22\",\r\n    \"password\": \"Hello123$\",\r\n    \"role\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/user/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/user/?role=2",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"user",
+								""
+							],
+							"query": [
+								{
+									"key": "firstName",
+									"value": "tes",
+									"description": "First name pattern",
+									"disabled": true
+								},
+								{
+									"key": "lastName",
+									"value": "Snow",
+									"description": "Last name pattern",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "pingvin",
+									"description": "Email pattern",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "2"
+								},
+								{
+									"key": "orderBy",
+									"value": "id",
+									"description": "Order by field. Default id",
+									"disabled": true
+								},
+								{
+									"key": "orderDirection",
+									"value": "DESC",
+									"description": "Order direction. Default ASC",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Count of returned data. Default 20",
+									"disabled": true
+								},
+								{
+									"key": "lastId",
+									"value": "1",
+									"description": "Pagination index. Default 0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by slug",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/user/:slug",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"user",
+								":slug"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "tester-22"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slug\": \"grish\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/user/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/user/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Images",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/Grisha Poghosyan/Downloads/227762720_198554315761042_2288108455697856333_n.jpg"
+								},
+								{
+									"key": "productId",
+									"value": "3",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{API_URL}}/image/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"image",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"images\": [1,2,3]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/image",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"image"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Category 1\",\r\n    \"slug\": \"category-1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/category/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/category/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"category",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "john",
+									"description": "Name pattern",
+									"disabled": true
+								},
+								{
+									"key": "orderBy",
+									"value": "id",
+									"description": "Order by field. Default id",
+									"disabled": true
+								},
+								{
+									"key": "orderDirection",
+									"value": "DESC",
+									"description": "Order direction. Default ASC",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Count of returned data. Default 20",
+									"disabled": true
+								},
+								{
+									"key": "lastId",
+									"value": "1",
+									"description": "Pagination index. Default 0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by slug",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/category/:slug",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"category",
+								":slug"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "category-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Category One\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/category/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"category",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/category/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"category",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subcategory",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Subcategory 1\",\r\n    \"slug\": \"subcategory-1\",\r\n    \"categoryId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/subcategory/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"subcategory",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/subcategory/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"subcategory",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "john",
+									"description": "Name pattern",
+									"disabled": true
+								},
+								{
+									"key": "categorySlug",
+									"value": "category-1",
+									"description": "Category slug",
+									"disabled": true
+								},
+								{
+									"key": "orderBy",
+									"value": "id",
+									"description": "Order by field. Default id",
+									"disabled": true
+								},
+								{
+									"key": "orderDirection",
+									"value": "DESC",
+									"description": "Order direction. Default ASC",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Count of returned data. Default 20",
+									"disabled": true
+								},
+								{
+									"key": "lastId",
+									"value": "1",
+									"description": "Pagination index. Default 0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by slug",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/subcategory/:slug",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"subcategory",
+								":slug"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "subcategory-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Subcategory One\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/subcategory/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"subcategory",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/subcategory/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"subcategory",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tes\",\r\n    \"slug\": \"tes\",\r\n    \"description\": \"tester22\",\r\n    \"tags\": [\"Hello\", \"World\"],\r\n    \"newPrice\": 1000,\r\n    \"oldPrice\": 2000,\r\n    \"contains\": true,\r\n    \"categoryId\": 1,\r\n    \"subcategoryId\": 2,\r\n    \"properties\": {\r\n        \"a\": true,\r\n        \"b\": false\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/product/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"product",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/product/",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"product",
+								""
+							],
+							"query": [
+								{
+									"key": "searchText",
+									"value": "Hello",
+									"description": "Search text",
+									"disabled": true
+								},
+								{
+									"key": "categorySlug",
+									"value": "test",
+									"description": "Category slug",
+									"disabled": true
+								},
+								{
+									"key": "subcategorySlug",
+									"value": "test2",
+									"description": "Subcategory slug",
+									"disabled": true
+								},
+								{
+									"key": "categoryId",
+									"value": "1",
+									"description": "Category id",
+									"disabled": true
+								},
+								{
+									"key": "subcategoryId",
+									"value": "1",
+									"description": "Subcategory id",
+									"disabled": true
+								},
+								{
+									"key": "priceStart",
+									"value": "1000",
+									"description": "New price min",
+									"disabled": true
+								},
+								{
+									"key": "priceEnd",
+									"value": "10000",
+									"description": "New price ",
+									"disabled": true
+								},
+								{
+									"key": "contains",
+									"value": "0",
+									"description": "Is contains",
+									"disabled": true
+								},
+								{
+									"key": "orderBy",
+									"value": "id",
+									"description": "Order by field. Default id",
+									"disabled": true
+								},
+								{
+									"key": "orderDirection",
+									"value": "DESC",
+									"description": "Order direction. Default ASC",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Count of returned data. Default 20",
+									"disabled": true
+								},
+								{
+									"key": "lastId",
+									"value": "1",
+									"description": "Pagination index. Default 0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by slug",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/product/:slug",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"product",
+								":slug"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "tes"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lavash\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/product/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"product",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/product/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"product",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
