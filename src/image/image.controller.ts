@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   NotFoundException,
-  Param,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -11,13 +10,12 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Authorize } from 'src/common/decorators/authorize.decorator';
 import { IOk } from 'src/common/types/ok.type';
-import { PathParams } from 'src/common/types/path-params.type';
 import { Image } from 'src/image/entities/image.entity';
 import { CreateImageDto } from './dto/create-image.dto';
+import { DeleteImagesDto } from './dto/delete-images.dto';
 import { ImageService } from './image.service';
-import { DeleteImagesFilters } from './types/delete-images-filters.type';
 
-@Controller('image')
+@Controller(Image.name)
 @Authorize()
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
@@ -33,23 +31,12 @@ export class ImageController {
     return await this.imageService.create(photos);
   }
 
-  @Delete(':id')
-  async removeOne(@Param() { id }: PathParams): Promise<IOk> {
-    const result = await this.imageService.remove(id);
-
-    if (!result) {
-      throw new NotFoundException('Image not found');
-    }
-
-    return { ok: result };
-  }
-
   @Delete()
-  async removeMany(@Body() { images }: DeleteImagesFilters): Promise<IOk> {
+  async remove(@Body() { images }: DeleteImagesDto): Promise<IOk> {
     const result = await this.imageService.remove(images);
 
     if (!result) {
-      throw new NotFoundException('Image not found');
+      throw new NotFoundException('Image(s) not found');
     }
 
     return { ok: result };

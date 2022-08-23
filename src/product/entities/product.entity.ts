@@ -1,10 +1,7 @@
-import slugify from 'slugify';
 import { Category } from 'src/category/entities/category.entity';
 import { Image } from 'src/image/entities/image.entity';
 import { Subcategory } from 'src/subcategory/entities/subcategory.entity';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -81,14 +78,6 @@ export class Product {
       this.properties = dto.properties;
       this.categoryId = dto.categoryId;
       this.subcategoryId = dto.subcategoryId;
-    }
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  public slugify() {
-    if (this.slug) {
-      this.slug = slugify(this.slug, { lower: true });
     }
   }
 }

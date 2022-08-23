@@ -1,9 +1,6 @@
-import slugify from 'slugify';
 import { Category } from 'src/category/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -38,12 +35,4 @@ export class Subcategory {
 
   @UpdateDateColumn()
   public updatedAt: Date;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  public slugify() {
-    if (this.slug) {
-      this.slug = slugify(this.slug, { lower: true });
-    }
-  }
 }

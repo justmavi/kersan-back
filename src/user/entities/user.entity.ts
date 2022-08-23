@@ -1,20 +1,10 @@
 import * as bcrypt from 'bcrypt';
+import { BaseEntity } from 'src/common/base/entity.base';
 import { Roles } from 'src/common/enums/roles.enum';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class User extends BaseEntity {
   @Column()
   public firstName: string;
 
@@ -29,12 +19,6 @@ export class User {
 
   @Column('int')
   public role: Roles;
-
-  @CreateDateColumn()
-  public createdAt: Date;
-
-  @UpdateDateColumn()
-  public updatedAt: Date;
 
   @BeforeInsert()
   @BeforeUpdate()

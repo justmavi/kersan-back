@@ -14,6 +14,8 @@ async function bootstrap() {
       },
     }),
   );
+  app.setGlobalPrefix('api');
+
   await app.listen(process.env.HTTP_PORT);
 
   console.log('Now listening port', process.env.HTTP_PORT);

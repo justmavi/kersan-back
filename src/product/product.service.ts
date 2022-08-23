@@ -1,111 +1,68 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrderDirection } from 'src/common/enums/order-direction.enum';
-import { Repository } from 'typeorm';
+import { BaseService } from 'src/common/base/service.base';
+import { attachPagination } from 'src/common/helpers/pagination.helper';
+import { PropertyHelpers } from 'src/common/helpers/property.helper';
+import {
+  Between,
+  FindManyOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Raw,
+  Repository,
+} from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { ProductFilters } from './types/product-filter.type';
+import { ProductFilter } from './types/product-filter.type';
 
 @Injectable()
-export class ProductService {
-  @InjectRepository(Product)
-  private readonly productRepository: Repository<Product>;
-
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const productToBeCreated = new Product(createProductDto);
-
-    const product = await this.productRepository.save(
-      this.productRepository.create(productToBeCreated),
-    );
-
-    return product;
+export class ProductService extends BaseService<
+  Product,
+  ProductFilter,
+  CreateProductDto,
+  UpdateProductDto
+> {
+  constructor(@InjectRepository(Product) repository: Repository<Product>) {
+    super(repository);
   }
 
-  async findAll(filters?: ProductFilters): Promise<Product | Product[]> {
-    const {
-      slug,
-      lastId,
-      searchText,
-      orderBy,
-      orderDirection,
-      limit,
-      categoryId,
-      subcategoryId,
-    } = filters;
-    if (slug) {
-      return await this.productRepository.findOne({
-        where: { slug },
-        relations: ['photos', 'category', 'subcategory'],
-      });
-    }
+  protected getFiltersConfiguration(
+    filter: ProductFilter,
+  ): FindManyOptions<Product> {
+    const where: FindOptionsWhere<Product> = {};
+    const isEmpty = PropertyHelpers.isNullOrUndefined;
 
-    const queryBuilder = this.productRepository.createQueryBuilder('product');
-
-    if (lastId) {
-      queryBuilder.where(
-        `product.id ${
-          filters.orderBy && filters.orderDirection === OrderDirection.DESC
-            ? '<'
-            : '>'
-        } :id`,
+    if (filter.searchText) {
+      where.name = Raw(
+        (alias) =>
+          `(${alias} ILIKE :name OR description ILIKE :description OR :tag = ANY(tags))`,
         {
-          id: lastId,
+          name: '%' + filter.searchText + '%',
+          description: '%' + filter.searchText + '%',
+          tag: filter.searchText,
         },
       );
     }
+    if (filter.categorySlug) where.category = { slug: filter.categorySlug };
+    if (filter.subcategorySlug)
+      where.subcategory = { slug: filter.subcategorySlug };
+    if (filter.categoryId) where.categoryId = filter.categoryId;
+    if (filter.subcategoryId) where.subcategoryId = filter.subcategoryId;
+    if (!isEmpty(filter.priceStart) && !isEmpty(filter.priceEnd))
+      where.newPrice = Between(filter.priceStart, filter.priceEnd);
+    if (!isEmpty(filter.contains)) where.contains = filter.contains;
 
-    if (searchText) {
-      queryBuilder.andWhere(
-        'product.name ILIKE :name OR description ILIKE :description OR :tag = ANY(tags)',
-        {
-          name: '%' + searchText + '%',
-          description: '%' + searchText + '%',
-          tag: searchText,
-        },
-      );
-    }
+    const opts = attachPagination<Product>(filter);
+    Object.assign(opts.where, where);
 
-    if (categoryId) {
-      queryBuilder.andWhere('categoryId = :categoryId', { categoryId });
-    }
-
-    if (subcategoryId) {
-      queryBuilder.andWhere('subcategoryId = :subcategoryId', {
-        subcategoryId,
-      });
-    }
-
-    queryBuilder.orderBy('product.' + orderBy, orderDirection);
-
-    const products = await queryBuilder
-      .leftJoinAndSelect('product.photos', 'image')
-      .take(limit)
-      .getMany();
-
-    return products;
+    return opts;
   }
-
-  async findOne(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne(id, {
-      relations: ['photos', 'category', 'subcategory'],
-    });
-
-    return product;
-  }
-
-  async update(
-    id: number,
-    updateProductDto: UpdateProductDto,
-  ): Promise<boolean> {
-    const result = await this.productRepository.update(id, updateProductDto);
-
-    return !!result.affected;
-  }
-
-  async remove(id: number): Promise<boolean> {
-    const result = await this.productRepository.delete(id);
-
-    return !!result.affected;
+  protected getRelationsConfiguration(): FindOptionsRelations<Product> {
+    return {
+      category: true,
+      subcategory: true,
+      photos: true,
+    };
   }
 }

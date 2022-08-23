@@ -8,13 +8,13 @@ import {
   WinstonModule,
 } from 'nest-winston';
 import { GlobalExceptionFilter } from 'src/common/exceptions/global.exception-filter';
-import { getConnectionOptions } from 'typeorm';
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import config from './common/configs/app.config';
 import { SMTPConnectionOptions } from './common/types/smtp.type';
+import dataSource from './data-source';
 import { ImageModule } from './image/image.module';
 import { ProductModule } from './product/product.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
@@ -30,7 +30,7 @@ import { UserModule } from './user/user.module';
         const isDevelopment =
           config.get<string>('global.nodeEnv') === 'development';
 
-        return Object.assign(await getConnectionOptions(), {
+        return Object.assign(dataSource.options, {
           synchronize: isDevelopment,
           logging: isDevelopment ? 'all' : ['error', 'warn'],
           logger: isDevelopment ? 'advanced-console' : 'file',

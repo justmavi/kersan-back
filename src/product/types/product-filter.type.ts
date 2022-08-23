@@ -1,6 +1,8 @@
+import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Min,
@@ -8,23 +10,44 @@ import {
 } from 'class-validator';
 import { Pagination } from 'src/common/types/pagination.type';
 
-export class ProductFilters extends Pagination {
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  public slug: string;
-
+export class ProductFilter extends Pagination {
   @IsOptional()
   @MinLength(4)
   public searchText?: string;
 
-  @IsInt()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  public categorySlug: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  public subcategorySlug: string;
+
+  @IsOptional()
+  @IsInt()
   @Min(1)
   public categoryId: number;
 
-  @IsInt()
   @IsOptional()
+  @IsInt()
   @Min(1)
   public subcategoryId: number;
+
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  @IsOptional()
+  @IsNumber()
+  public priceStart: number = 0;
+
+  @IsOptional()
+  @IsNumber()
+  public priceEnd: number = 2 ** 52;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    console.log(value);
+    return +value >= 1;
+  })
+  public contains = true;
 }

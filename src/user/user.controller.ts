@@ -1,76 +1,21 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { Authorize } from 'src/common/decorators/authorize.decorator';
-import { Roles } from 'src/common/enums/roles.enum';
-import { IOk } from 'src/common/types/ok.type';
-import { PathParams } from 'src/common/types/path-params.type';
+import { Controller } from '@nestjs/common';
+import { BaseController } from 'src/common/base/controller.base';
+import { AccessControlOptions } from 'src/common/options/acl.options';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 import { UserFilter } from './types/user-filter.type';
 import { UserService } from './user.service';
 
-@Controller('user')
-@Authorize(Roles.ROLE_ADMIN)
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.userService.create(createUserDto);
-    delete user.password;
-
-    return user;
-  }
-
-  @Get()
-  async findAll(@Query() filter: UserFilter) {
-    const users = await this.userService.findAll(filter);
-
-    return users;
-  }
-
-  @Get(':id')
-  async findOne(@Param() { id }: PathParams) {
-    const user = await this.userService.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
-  }
-
-  @Patch(':id')
-  async update(
-    @Param() { id }: PathParams,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IOk> {
-    const result = await this.userService.update(id, updateUserDto);
-
-    if (!result) {
-      throw new NotFoundException('User not found');
-    }
-
-    return { ok: result };
-  }
-
-  @Delete(':id')
-  async remove(@Param() { id }: PathParams): Promise<IOk> {
-    const result = await this.userService.remove(id);
-
-    if (!result) {
-      throw new NotFoundException('User not found');
-    }
-
-    return { ok: result };
+@Controller(User.name)
+export class UserController extends BaseController<
+  User,
+  UserFilter,
+  CreateUserDto,
+  UpdateUserDto,
+  UserService
+>(CreateUserDto, UpdateUserDto, UserFilter, AccessControlOptions.LevelFive) {
+  constructor(service: UserService) {
+    super(service, User.name);
   }
 }

@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -12,7 +11,6 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { ValidationHelpers } from 'src/common/helpers/validation.helper';
 
 export class CreateProductDto {
   @IsString()
@@ -42,7 +40,6 @@ export class CreateProductDto {
   public oldPrice: number | null;
 
   @IsOptional()
-  @Transform(({ value }) => ValidationHelpers.booleanVariants.get(value))
   @IsBoolean()
   public contains = true;
 
