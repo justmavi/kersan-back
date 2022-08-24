@@ -34,8 +34,8 @@ export default () => ({
     port: process.env.MAILTRAP_PORT ?? 2525,
     secure: process.env.MAILTRAP_SECURE === 'true',
     auth: {
-      user: process.env.MAILTRAP_USER ?? '475bf2b4acf4f2',
-      pass: process.env.MAILTRAP_PASS ?? '80c026ed507184',
+      user: process.env.MAILTRAP_USER,
+      pass: process.env.MAILTRAP_PASS,
     },
   },
   mail: {
