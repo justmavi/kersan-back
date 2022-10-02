@@ -1,8 +1,12 @@
+import * as path from 'path';
+
 export default () => ({
   global: {
     httpPort: process.env.HTTP_PORT ?? 8080,
     nodeEnv: process.env.NODE_ENV ?? 'development',
     host: process.env.APP_HOST ?? 'http://localhost:8080',
+    staticFilesPath: path.join(process.cwd(), '/images'),
+    servePath: '/images/',
   },
   upload: {
     path: process.env.UPLOADS_FOLDER ?? './images',

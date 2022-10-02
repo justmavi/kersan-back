@@ -54,6 +54,7 @@ export class ProductService extends BaseService<
     if (!isEmpty(filter.contains)) where.contains = filter.contains;
 
     const opts = attachPagination<Product>(filter);
+    console.log({ opts });
     Object.assign(opts.where, where);
 
     return opts;

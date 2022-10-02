@@ -14,7 +14,7 @@ export class Pagination {
 
   @IsOptional()
   @IsInt()
-  public limit?: number = 20;
+  public limit?: number = 21;
 
   @IsOptional()
   @IsEnum(OrderDirection)

@@ -10,7 +10,9 @@ export function attachPagination<T>(opts: Pagination): FindManyOptions<T> {
     },
     where: {
       id:
-        opts.orderBy && opts.orderDirection === OrderDirection.DESC
+        opts.orderBy &&
+        opts.lastId &&
+        opts.orderDirection === OrderDirection.DESC
           ? LessThan(opts.lastId)
           : MoreThan(opts.lastId),
     },
